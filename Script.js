@@ -1,34 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Welcome to your first Cloud Script revision!
-//
-// Cloud Script runs in the PlayFab cloud and has full access to the PlayFab Game Server API
-// (https://api.playfab.com/Documentation/Server), and it runs in the context of a securely
-// authenticated player, so you can use it to implement logic for your game that is safe from
-// client-side exploits.
-//
-// Cloud Script functions can also make web requests to external HTTP
-// endpoints, such as a database or private API for your title, which makes them a flexible
-// way to integrate with your existing backend systems.
-//
-// There are several different options for calling Cloud Script functions:
-//
-// 1) Your game client calls them directly using the "ExecuteCloudScript" API,
-// passing in the function name and arguments in the request and receiving the
-// function return result in the response.
-// (https://api.playfab.com/Documentation/Client/method/ExecuteCloudScript)
-//
-// 2) You create PlayStream event actions that call them when a particular
-// event occurs, passing in the event and associated player profile data.
-// (https://api.playfab.com/playstream/docs)
-//
-// 3) For titles using the Photon Add-on (https://playfab.com/marketplace/photon/),
-// Photon room events trigger webhooks which call corresponding Cloud Script functions.
-//
-// The following examples demonstrate all three options.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 handlers.Info = function (args, context) {
     return {
@@ -36,9 +5,22 @@ handlers.Info = function (args, context) {
                 "ServiceName": "UberPy",
                 "Configuration": "Development",
                 "Version": 0,
-                "LobbyServer": "10.1.1.21"
+                "LobbyServer": "119.23.134.223"
               }
             }
+};
+
+handlers.GetGameServerRegions = function (args, context) {
+    return {"Regions": [{"Available": True, "Name": "Australia", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "APSouthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "USWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "USEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "SAEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "China", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "EUWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "APNorthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+    {"Available": True, "Name": "USCentral", "GameCount": 1, "GameModes": [{"GameCount": 1, "GameMode": "3346578531", "GamePlayersCount": 1}], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 1}]}
+
 };
 
 // This is a Cloud Script function. "args" is set to the value of the "FunctionParameter"
@@ -69,8 +51,7 @@ handlers.helloWorld = function (args, context) {
     return { messageValue: message };
 };
 
-// This is a simple example of making a PlayFab server API call
-handlers.makeAPICall = function (args, context) {
+handlers.getMMVars = function (args, context) {
     var request = {
         PlayFabId: currentPlayerId, Statistics: [{
                 StatisticName: "Level",
