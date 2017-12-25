@@ -1,13 +1,30 @@
 
 handlers.Info = function (args, context) {
-    return {
-              "ServiceInfo" : {
-                "ServiceName": "UberPy",
-                "Configuration": "Development",
-                "Version": 0,
-                "LobbyServer": "loadout.sonkwo.com"
-              }
-            }
+	var arrayOfStrings=[];
+	if (args && args.buildversion){
+        buildversion = args.buildversion;
+		arrayOfStrings = buildversion.split('-');
+	}
+	
+	if (arrayOfStrings.length<2||arrayOfStrings[1].length==1){
+		return {
+		  "ServiceInfo" : {
+			"ServiceName": "UberPy",
+			"Configuration": "Development",
+			"Version": 0,
+			"LobbyServer": "loadout.sonkwo.com"
+		  }
+		}
+	}else{
+		return {
+		  "ServiceInfo" : {
+			"ServiceName": "UberPy",
+			"Configuration": "Development",
+			"Version": 0,
+			"LobbyServer": "47.91.129.242"
+		  }
+		}
+	}
 };
 
 handlers.GetGameServerRegions = function (args, context) {
