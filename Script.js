@@ -21,7 +21,7 @@ handlers.Info = function (args, context) {
 			"ServiceName": "UberPy",
 			"Configuration": "Development",
 			"Version": 0,
-			"LobbyServer": "47.91.129.242"
+			"LobbyServer": "127.0.0.1"
 		  }
 		}
 	}
