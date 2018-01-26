@@ -11,23 +11,26 @@ handlers.Info = function (args, context) {
 		log.info(arrayOfStrings[1].length);
 	}
 	if (arrayOfStrings.length<2||arrayOfStrings[1].length==1){
-		return {
-		  "ServiceInfo" : {
+		serviceInfo={
 			"ServiceName": "UberPy",
 			"Configuration": "Development",
 			"Version": 0,
 			"LobbyServer": "loadout.sonkwo.com"
-		  }
 		}
 	}else{
-		return {
-		  "ServiceInfo" : {
+		serviceInfo= {
 			"ServiceName": "UberPy",
 			"Configuration": "Development",
 			"Version": 0,
 			"LobbyServer": "127.0.0.1"
-		  }
 		}
+	}
+	matchmakerInfo={
+		"118.190.45.37":["221.12.169.142"]
+	}
+	return{
+		"ServiceInfo" :serviceInfo,
+		"MatchmakerInfo":matchmakerInfo
 	}
 };
 
