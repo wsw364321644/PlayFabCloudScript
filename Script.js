@@ -46,7 +46,6 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             var dailyInfo={};
         }
-        log.info(dailyInfo);
         let couldCheckin=true;
         if(dailyInfo.hasOwnProperty("LastCheckinTime")){
             var lastCheckinTime =new Date(dailyInfo.LastCheckinTime*1000);
@@ -68,10 +67,12 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             PlayFabId: currentPlayerId,
             Data: {
-                "dailyInfo":dailyInfo
+                DailyInfo:dailyInfo
             }
         };
+        log.info(request);
         let updateResult=server.UpdateUserReadOnlyData(request);
+        log.info(updateResult);
         return {status: updateResult.status,code:updateResult.code}
     }catch (ex) {
         log.error(ex);
