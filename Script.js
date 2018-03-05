@@ -74,6 +74,7 @@ handlers.GetDailyBonus = function (args, context) {
         let updateResult=server.UpdateUserReadOnlyData(request);
         return {status: updateResult.status,code:updateResult.code}
     }catch (ex) {
+        log.error(ex);
         return {status:"error",code:400};
     }
 
