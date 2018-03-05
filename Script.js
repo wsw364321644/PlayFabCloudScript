@@ -57,13 +57,13 @@ handlers.GetDailyBonus = function (args, context) {
         if(!couldCheckin){
             return {status: "already checkin".status,code:200}
         }
-        log.info("checkin");
         dailyInfo.LastCheckinTime=Date.now()/1000;
         if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
             dailyInfo.BonusCount+=1;
         }else{
             dailyInfo.BonusCount=1;
         }
+        log.info(dailyInfo);
         request = {
             PlayFabId: currentPlayerId,
             Data: {
