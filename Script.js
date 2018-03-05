@@ -57,7 +57,9 @@ handlers.GetDailyBonus = function (args, context) {
         if(!couldCheckin){
             return {status:"already checkin",code:200}
         }
-        if(dailyInfo.hasOwnProperty("LastCheckinTime")&&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()){
+        if(dailyInfo.hasOwnProperty("LastCheckinTime")
+        &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
+        &&today.getDate()-lastCheckinTime.getDate()<7){
             dailyInfo.BonusCount+=1;
         }else{
             dailyInfo.BonusCount=1;
@@ -69,9 +71,7 @@ handlers.GetDailyBonus = function (args, context) {
                 DailyInfo:JSON.stringify(dailyInfo)
             }
         };
-        log.info(request);
         let updateResult=server.UpdateUserReadOnlyData(request);
-        log.info(updateResult);
         return {status: updateResult.status,code:updateResult.code}
     }catch (ex) {
         log.error(ex);
