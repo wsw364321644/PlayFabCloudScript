@@ -36,13 +36,13 @@ handlers.Info = function (args, context) {
 handlers.GetDailyBonus = function (args, context) {
     try{
         let request = {
-            PlayFabId: currentPlayerId,
+            PlayFabId: currentPlayerId+1,
             Keys: ["DailyInfo"]
         };
         let dailyInfoResult=server.GetUserReadOnlyData(request)
         log.info(dailyInfoResult);
-        if (!(dailyInfoResult.hasOwnProperty("data")&&dailyInfoResult.data.hasOwnProperty("Data"))){
-            return {status: dailyInfoResult.status,code:dailyInfoResult.code}
+        if (!dailyInfoResult.hasOwnProperty("Data")){
+            return {status: "date not exist",code:400}
         }
         if(dailyInfoResult.data.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=dailyInfoResult.data.Data.DailyInfo;
