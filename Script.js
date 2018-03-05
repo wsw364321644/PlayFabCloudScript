@@ -35,6 +35,7 @@ handlers.Info = function (args, context) {
 
 handlers.GetDailyBonus = function (args, context) {
     try{
+        log.error("test");
         let request = {
             PlayFabId: currentPlayerId,
             Keys: ["DailyInfo"]
@@ -56,13 +57,14 @@ handlers.GetDailyBonus = function (args, context) {
                 couldCheckin=false
             }
         }
-        if(couldCheckin){
-            dailyInfo.LastCheckinTime=Date.now()/1000;
-            if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
-                dailyInfo.BonusCount+=1;
-            }else{
-                dailyInfo.BonusCount=1;
-            }
+        if(!couldCheckin){
+            return {status: "already checkin".status,code:200}
+        }
+        dailyInfo.LastCheckinTime=Date.now()/1000;
+        if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
+            dailyInfo.BonusCount+=1;
+        }else{
+            dailyInfo.BonusCount=1;
         }
         request = {
             PlayFabId: currentPlayerId,
