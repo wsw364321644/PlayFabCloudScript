@@ -1,81 +1,110 @@
-
 handlers.Info = function (args, context) {
-	var arrayOfStrings=[];
-	if (args && args.buildversion){
-        buildversion = args.buildversion;
-		arrayOfStrings = buildversion.split('-');
-	}
+    var arrayOfStrings=[];
+    let serviceInfo;
+    if (args && args.buildversion){
+        let buildversion = args.buildversion;
+        arrayOfStrings = buildversion.split('-');
+    }
+    log.info(arrayOfStrings.length);
+    if(arrayOfStrings.length>1){
+        log.info(arrayOfStrings[1].length);
+    }
+    if (arrayOfStrings.length<2||arrayOfStrings[1].length==1){
+        serviceInfo={
+            "ServiceName": "UberPy",
+            "Configuration": "Development",
+            "Version": 0,
+            "LobbyServer": "loadout.sonkwo.com"
+        }
+    }else{
+        serviceInfo= {
+            "ServiceName": "UberPy",
+            "Configuration": "Development",
+            "Version": 0,
+            "LobbyServer": "127.0.0.1"
+        }
+    }
+    let matchmakerInfo={
+        "118.190.45.37:8001":[]
+    }
+    return{
+        "ServiceInfo" :serviceInfo,
+        "MatchmakerInfo":matchmakerInfo
+    }
+};
 
-	log.info(arrayOfStrings.length);
-	if(arrayOfStrings.length>1){
-		log.info(arrayOfStrings[1].length);
-	}
-	if (arrayOfStrings.length<2||arrayOfStrings[1].length==1){
-		serviceInfo={
-			"ServiceName": "UberPy",
-			"Configuration": "Development",
-			"Version": 0,
-			"LobbyServer": "loadout.sonkwo.com"
-		}
-	}else{
-		serviceInfo= {
-			"ServiceName": "UberPy",
-			"Configuration": "Development",
-			"Version": 0,
-			"LobbyServer": "127.0.0.1"
-		}
-	}
-	matchmakerInfo={
-		"118.190.45.37:8001":[]
-	}
-	return{
-		"ServiceInfo" :serviceInfo,
-		"MatchmakerInfo":matchmakerInfo
-	}
+handlers.GetDailyInfo = function (args, context) {
+    try{
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["DailyInfo"]
+        };
+        let dailyInfoResult=server.GetUserReadOnlyData(request)
+        if (dailyInfoResult.hasOwnProperty("data")&&dailyInfoResult.data.hasOwnProperty("Data")&&dailyInfoResult.data.Data.hasOwnProperty("Last")){
+            var data=dailyInfoResult.data.Data;
+        }
+    }catch (ex) {
+        log.error(ex);
+    }
+    return
+};
+
+handlers.GetDailyBonus = function (args, context) {
+    try{
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["DailyInfo"]
+        };
+        let dailyInfoResult=server.GetUserReadOnlyData(request)
+        if (!(dailyInfoResult.hasOwnProperty("data")&&dailyInfoResult.data.hasOwnProperty("Data"))){
+            return {status: dailyInfoResult.status,code:dailyInfoResult.code}
+        }
+        if(dailyInfoResult.data.Data.hasOwnProperty("DailyInfo")&&){
+            var dailyInfo=dailyInfoResult.data.Data.DailyInfo;
+        }else{
+            var dailyInfo={};
+        }
+        let couldCheckin=true;
+        if(dailyInfo.hasOwnProperty("LastCheckinTime")){
+            var lastCheckinTime =new Date(data.LastCheckinTime*1000);
+            var today = new Date();
+            if(lastCheckinTime.getYear()==today.getYear()&&lastCheckinTime.getMonth()==today.getMonth()&&lastCheckinTime.getDate()==today.getDate()){
+                couldCheckin=false
+            }
+        }
+        if(couldCheckin){
+            dailyInfo.LastCheckinTime=Date.now()/1000;
+            if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
+                    dailyInfo.BonusCount+=1;
+            }else{
+                dailyInfo.BonusCount=1;
+            }
+        }
+        request = {
+            PlayFabId: currentPlayerId,
+            Data: {
+                "dailyInfo":dailyInfo
+            }
+        };
+        let updateResult=server.UpdateUserReadOnlyData(request);
+        return {status: updateResult.status,code:updateResult.code}
+    }catch (ex) {
+        log.error(ex);
+        return {"error":ex};
+    }
+
 };
 
 handlers.GetGameServerRegions = function (args, context) {
     return {"Regions": [{"Available": True, "Name": "Australia", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "APSouthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "USWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "USEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "SAEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "China", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "EUWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "APNorthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
-    {"Available": True, "Name": "USCentral", "GameCount": 1, "GameModes": [{"GameCount": 1, "GameMode": "3346578531", "GamePlayersCount": 1}], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 1}]}
-
-};
-
-
-// This is a Cloud Script function. "args" is set to the value of the "FunctionParameter"
-// parameter of the ExecuteCloudScript API.
-// (https://api.playfab.com/Documentation/Client/method/ExecuteCloudScript)
-// "context" contains additional information when the Cloud Script function is called from a PlayStream action.
-handlers.helloWorld = function (args, context) {
-    // The pre-defined "currentPlayerId" variable is initialized to the PlayFab ID of the player logged-in on the game client.
-    // Cloud Script handles authenticating the player automatically.
-    var message = "Hello " + currentPlayerId + "!";
-    // You can use the "log" object to write out debugging statements. It has
-    // three functions corresponding to logging level: debug, info, and error. These functions
-    // take a message string and an optional object.
-    log.info(message);
-    // (https://api.playfab.com/playstream/docs/PlayStreamEventModels/player/player_executed_cloudscript)
-    return { messageValue: message };
-};
-
-handlers.getMMVars = function (args, context) {
-    var request = {
-        PlayFabId: currentPlayerId, Statistics: [{
-                StatisticName: "Level",
-                Value: 2
-            }]
-    };
-    // The pre-defined "server" object has functions corresponding to each PlayFab server API
-    // (https://api.playfab.com/Documentation/Server). It is automatically
-    // authenticated as your title and handles all communication with
-    // the PlayFab API, so you don't have to write extra code to issue HTTP requests.
-    var playerStatResult = server.UpdatePlayerStatistics(request);
+        {"Available": True, "Name": "APSouthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "USWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "USEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "SAEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "China", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "EUWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "APNorthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 0},
+        {"Available": True, "Name": "USCentral", "GameCount": 1, "GameModes": [{"GameCount": 1, "GameMode": "3346578531", "GamePlayersCount": 1}], "PingUrl": "http://10.1.1.223:8000/ping", "GamePlayersCount": 1}]}
 };
 
 // This is a simple example of making a web request to an external HTTP API.
@@ -144,9 +173,9 @@ handlers.completedLevel = function (args, context) {
     log.debug("Set lastLevelCompleted for player " + currentPlayerId + " to " + level);
     var request = {
         PlayFabId: currentPlayerId, Statistics: [{
-                StatisticName: "level_monster_kills",
-                Value: monstersKilled
-            }]
+            StatisticName: "level_monster_kills",
+            Value: monstersKilled
+        }]
     };
     server.UpdatePlayerStatistics(request);
     log.debug("Updated level_monster_kills stat for player " + currentPlayerId + " to " + monstersKilled);
@@ -206,9 +235,9 @@ function processPlayerMove(playerMove) {
     movesMade += 1;
     var request = {
         PlayFabId: currentPlayerId, Statistics: [{
-                StatisticName: "movesMade",
-                Value: movesMade
-            }]
+            StatisticName: "movesMade",
+            Value: movesMade
+        }]
     };
     server.UpdatePlayerStatistics(request);
     server.UpdateUserInternalData({
@@ -286,11 +315,11 @@ handlers.RoomEventRaised = function (args) {
     log.debug("Event Raised - Game: " + args.GameId + " Event Type: " + eventData.eventType);
 
     switch (eventData.eventType) {
-        case "playerMove":
-            processPlayerMove(eventData);
-            break;
+    case "playerMove":
+        processPlayerMove(eventData);
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 };
