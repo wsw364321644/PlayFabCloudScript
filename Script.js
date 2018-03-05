@@ -42,7 +42,7 @@ handlers.GetDailyBonus = function (args, context) {
         let dailyInfoResult=server.GetUserReadOnlyData(request)
         log.info(dailyInfoResult);
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
-            var dailyInfo=dailyInfoResult.Data.DailyInfo;
+            var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo);
         }else{
             var dailyInfo={};
         }
@@ -66,7 +66,7 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             PlayFabId: currentPlayerId,
             Data: {
-                DailyInfo:dailyInfo
+                DailyInfo:JSON.stringify(dailyInfo)
             }
         };
         log.info(request);
@@ -75,7 +75,7 @@ handlers.GetDailyBonus = function (args, context) {
         return {status: updateResult.status,code:updateResult.code}
     }catch (ex) {
         log.error(ex);
-        return {status:"error",code:400};
+        return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
     }
 
 };
