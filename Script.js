@@ -42,7 +42,7 @@ handlers.GetDailyBonus = function (args, context) {
         let dailyInfoResult=server.GetUserReadOnlyData(request)
         log.info(dailyInfoResult);
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
-            var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo);
+            var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
         }else{
             var dailyInfo={};
         }
