@@ -33,22 +33,6 @@ handlers.Info = function (args, context) {
     }
 };
 
-handlers.GetDailyInfo = function (args, context) {
-    try{
-        let request = {
-            PlayFabId: currentPlayerId,
-            Keys: ["DailyInfo"]
-        };
-        let dailyInfoResult=server.GetUserReadOnlyData(request)
-        if (dailyInfoResult.hasOwnProperty("data")&&dailyInfoResult.data.hasOwnProperty("Data")&&dailyInfoResult.data.Data.hasOwnProperty("Last")){
-            var data=dailyInfoResult.data.Data;
-        }
-    }catch (ex) {
-        log.error(ex);
-    }
-    return
-};
-
 handlers.GetDailyBonus = function (args, context) {
     try{
         let request = {
@@ -59,14 +43,14 @@ handlers.GetDailyBonus = function (args, context) {
         if (!(dailyInfoResult.hasOwnProperty("data")&&dailyInfoResult.data.hasOwnProperty("Data"))){
             return {status: dailyInfoResult.status,code:dailyInfoResult.code}
         }
-        if(dailyInfoResult.data.Data.hasOwnProperty("DailyInfo")&&){
+        if(dailyInfoResult.data.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=dailyInfoResult.data.Data.DailyInfo;
         }else{
             var dailyInfo={};
         }
         let couldCheckin=true;
         if(dailyInfo.hasOwnProperty("LastCheckinTime")){
-            var lastCheckinTime =new Date(data.LastCheckinTime*1000);
+            var lastCheckinTime =new Date(dailyInfo.LastCheckinTime*1000);
             var today = new Date();
             if(lastCheckinTime.getYear()==today.getYear()&&lastCheckinTime.getMonth()==today.getMonth()&&lastCheckinTime.getDate()==today.getDate()){
                 couldCheckin=false
@@ -75,7 +59,7 @@ handlers.GetDailyBonus = function (args, context) {
         if(couldCheckin){
             dailyInfo.LastCheckinTime=Date.now()/1000;
             if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
-                    dailyInfo.BonusCount+=1;
+                dailyInfo.BonusCount+=1;
             }else{
                 dailyInfo.BonusCount=1;
             }
