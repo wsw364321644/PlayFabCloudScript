@@ -36,16 +36,13 @@ handlers.Info = function (args, context) {
 handlers.GetDailyBonus = function (args, context) {
     try{
         let request = {
-            PlayFabId: currentPlayerId+1,
+            PlayFabId: currentPlayerId,
             Keys: ["DailyInfo"]
         };
         let dailyInfoResult=server.GetUserReadOnlyData(request)
         log.info(dailyInfoResult);
-        if (!dailyInfoResult.hasOwnProperty("Data")){
-            return {status: "date not exist",code:400}
-        }
-        if(dailyInfoResult.data.Data.hasOwnProperty("DailyInfo")){
-            var dailyInfo=dailyInfoResult.data.Data.DailyInfo;
+        if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
+            var dailyInfo=dailyInfoResult.Data.DailyInfo;
         }else{
             var dailyInfo={};
         }
@@ -77,8 +74,7 @@ handlers.GetDailyBonus = function (args, context) {
         let updateResult=server.UpdateUserReadOnlyData(request);
         return {status: updateResult.status,code:updateResult.code}
     }catch (ex) {
-        log.error(ex);
-        return {"error":ex};
+        return {status:"error",code:400};
     }
 
 };
