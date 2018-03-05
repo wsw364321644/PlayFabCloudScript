@@ -57,8 +57,11 @@ handlers.GetDailyBonus = function (args, context) {
         if(!couldCheckin){
             return {status: "already checkin".status,code:200}
         }
+        log.info(Date.now()/1000);
         dailyInfo.LastCheckinTime=Date.now()/1000;
-        if((today.getDay()==0?today.getDay():7)>lastCheckinTime.getDay()){
+        log.info(dailyInfo);
+        log.info(today.getDay()==0?today.getDay():7);
+        if((today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()&&dailyInfo.hasOwnProperty("LastCheckinTime")){
             dailyInfo.BonusCount+=1;
         }else{
             dailyInfo.BonusCount=1;
