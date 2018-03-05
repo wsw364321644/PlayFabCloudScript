@@ -69,6 +69,7 @@ handlers.GetDailyBonus = function (args, context) {
                 DailyInfo:dailyInfo
             }
         };
+        log.info(request);
         let updateResult=server.UpdateUserReadOnlyData(request);
         log.info(updateResult);
         return {status: updateResult.status,code:updateResult.code}
