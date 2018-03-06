@@ -72,7 +72,11 @@ handlers.GetDailyBonus = function (args, context) {
             }
         };
         let updateResult=server.UpdateUserReadOnlyData(request);
-        return {status: updateResult.status,code:updateResult.code}
+        return {status:"ok",code:200,
+            Data:{
+                BonusCount:dailyInfo.BonusCount,
+                LastCheckinTime:dailyInfo.LastCheckinTime
+            }}
     }catch (ex) {
         log.error(ex);
         return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
