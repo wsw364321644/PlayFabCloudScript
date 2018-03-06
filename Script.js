@@ -56,7 +56,7 @@ handlers.GetDailyBonus = function (args, context) {
         }
         if(!couldCheckin){
             return {status:"already checkin",code:200,
-                Data:{
+                data:{
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime
                 }}
@@ -77,7 +77,7 @@ handlers.GetDailyBonus = function (args, context) {
         };
         let updateResult=server.UpdateUserReadOnlyData(request);
         return {status:"ok",code:200,
-            Data:{
+            data:{
                 BonusCount:dailyInfo.BonusCount,
                 LastCheckinTime:dailyInfo.LastCheckinTime
             }}
