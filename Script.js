@@ -150,8 +150,11 @@ handlers.ReadXmlTester = function (args, context) {
         let result=server.GetTitleInternalData(request);
         log.info(result);
         var parser=new DOMParser();
+        log.info(1);
         var xmldoc=parser.parserFromString(result.Data.DailyReward,'text/xml')
+        log.info(2);
         let text =xmldoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+        log.info(3);
         return {'test':text}
     }catch (ex) {
         log.error(ex);
