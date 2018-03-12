@@ -142,35 +142,22 @@ handlers.handlePlayStreamEventAndProfile = function (args, context) {
 };
 
 
-// Below are some examples of using Cloud Script in slightly more realistic scenarios
+handlers.ReadXmlTester = function (args, context) {
+    try{
+        let request = {
+            Keys: ["DailyReward"]
+        };
+        let result=server.GetTitleInternalData(request);
+        log.info(result);
+        var parser=new DOMParser();
+        var xmldoc=parser.parserFromString(result.Data.DailyReward.Value,'text/xml')
+        let text =xmldoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+        return {'test':text}
+    }catch (ex) {
+        log.error(ex);
+        return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
+    }
 
-// This is a function that the game client would call whenever a player completes
-// a level. It updates a setting in the player's data that only game server
-// code can write - it is read-only on the client - and it updates a player
-// statistic that can be used for leaderboards.
-//
-// A funtion like this could be extended to perform validation on the
-// level completion data to detect cheating. It could also do things like
-// award the player items from the game catalog based on their performance.
-handlers.completedLevel = function (args, context) {
-    var level = args.levelName;
-    var monstersKilled = args.monstersKilled;
-
-    var updateUserDataResult = server.UpdateUserInternalData({
-        PlayFabId: currentPlayerId,
-        Data: {
-            lastLevelCompleted: level
-        }
-    });
-
-    log.debug("Set lastLevelCompleted for player " + currentPlayerId + " to " + level);
-    var request = {
-        PlayFabId: currentPlayerId, Statistics: [{
-            StatisticName: "level_monster_kills",
-            Value: monstersKilled
-        }]
-    };
-    server.UpdatePlayerStatistics(request);
     log.debug("Updated level_monster_kills stat for player " + currentPlayerId + " to " + monstersKilled);
 };
 
