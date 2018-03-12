@@ -149,6 +149,7 @@ handlers.ReadXmlTester = function (args, context) {
         };
         let result=server.GetTitleInternalData(request);
         log.info(result);
+        log.info(0);
         var parser=new DOMParser();
         log.info(1);
         var xmldoc=parser.parserFromString(result.Data.DailyReward,'text/xml')
