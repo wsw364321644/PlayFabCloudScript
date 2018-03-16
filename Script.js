@@ -35,6 +35,10 @@ handlers.Info = function (args, context) {
 
 handlers.GetDailyBonus = function (args, context) {
     try{
+        let checkonly=false;
+        if (args && args.checkonly){
+            checkonly = args.checkonly;
+        }
         let request = {
             PlayFabId: currentPlayerId,
             Keys: ["DailyInfo"]
@@ -44,6 +48,11 @@ handlers.GetDailyBonus = function (args, context) {
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
         }else{
+            if (checkonly)
+                return{status:"ok",code:200,
+                    data:{
+                        hascheckin:false
+                    }}
             var dailyInfo={};
         }
         let couldCheckin=true;
@@ -57,8 +66,14 @@ handlers.GetDailyBonus = function (args, context) {
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
+                    hascheckin:true,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime
+                }}
+        }else if(checkonly){
+            return{status:"ok",code:200,
+                data:{
+                    hascheckin:false
                 }}
         }
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
@@ -139,30 +154,6 @@ handlers.handlePlayStreamEventAndProfile = function (args, context) {
     var response = http.request('https://httpbin.org/status/200', 'post', content, 'application/json', null);
 
     return { externalAPIResponse: response };
-};
-
-
-handlers.ReadXmlTester = function (args, context) {
-    try{
-        let request = {
-            Keys: ["DailyReward"]
-        };
-        let result=server.GetTitleInternalData(request);
-        log.info(result);
-        log.info(0);
-        var parser=new DOMParser();
-        log.info(1);
-        var xmldoc=parser.parserFromString(result.Data.DailyReward,'text/xml')
-        log.info(2);
-        let text =xmldoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
-        log.info(3);
-        return {'test':text}
-    }catch (ex) {
-        log.error(ex);
-        return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
-    }
-
-    log.debug("Updated level_monster_kills stat for player " + currentPlayerId + " to " + monstersKilled);
 };
 
 
