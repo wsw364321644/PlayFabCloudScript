@@ -63,7 +63,7 @@ handlers.GetDailyBonus = function (args, context) {
                 couldCheckin=false
             }
         }
-        print(couldCheckin)
+        log.info(couldCheckin)
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
@@ -87,7 +87,7 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["Challenges:V7.0"]
         };
         let challengesResult=server.GetUserReadOnlyData(request)
-        print(challengesResult)
+        log.info(challengesResult)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             var level=challenges.Level
@@ -99,13 +99,13 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyRewards"]
         };
         let dailyRewards=server.GetTitleData(request)
-        print(dailyRewards)
+        log.info(dailyRewards)
         if(!dailyRewards.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
             var dailyReward=dailyRewards.Data.DailyRewards[today.getDay().toString()]
         }
-        print(dailyReward)
+        log.info(dailyReward)
 
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
