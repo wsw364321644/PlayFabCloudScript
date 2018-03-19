@@ -1,3 +1,23 @@
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt))
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+
+}
+
 handlers.Info = function (args, context) {
     var arrayOfStrings=[];
     let serviceInfo;
@@ -119,12 +139,12 @@ handlers.GetDailyBonus = function (args, context) {
                 server.AddUserVirtualCurrency(request)
             }else if(levelReward.RewardType=="BoosterPack"){
                 log.info(1)
-                log.info(today.pattern("yyyy-MM-dd hh:mm:ss"))
-                log.info("DailyReward"+today.pattern("yyyy-MM-dd hh:mm:ss"));
+                log.info(today.Format("yyyy-MM-dd"))
+                log.info("DailyReward"+today.Format("yyyy-MM-dd"));
                 request = {
                     PlayFabId:currentPlayerId,
                     ItemIds:[levelReward.ItemId],
-                    Annotation:"DailyReward"+today.pattern("yyyy-MM-dd hh:mm:ss")
+                    Annotation:"DailyReward"+today.Format("yyyy-MM-dd")
                 };
                 let grantItemsResult=server.GrantItemsToUser(request)
                 log.info(grantItemsResult);
