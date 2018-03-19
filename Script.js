@@ -102,10 +102,10 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
-            log.info(dailyRewardsResult.Data.DailyRewards)
             let dailyRewards=JSON.parse(dailyRewardsResult.Data.DailyRewards)
             log.info(1)
-            log.info(today.getDay()+'')
+            let day=today.getDay()
+            log.info(day)
             var dailyReward=dailyRewards[today.getDay().toString()]
         }
         log.info(dailyReward)
