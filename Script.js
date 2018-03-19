@@ -105,7 +105,7 @@ handlers.GetDailyBonus = function (args, context) {
             log.info(dailyRewardsResult.Data.DailyRewards)
             let dailyRewards=JSON.parse(dailyRewardsResult.Data.DailyRewards)
             log.info(dailyRewards)
-            log.info(today.getDay().toString())
+            log.info(today.getDay())
             var dailyReward=dailyRewards[today.getDay().toString()]
         }
         log.info(dailyReward)
