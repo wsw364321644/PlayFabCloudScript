@@ -103,10 +103,7 @@ handlers.GetDailyBonus = function (args, context) {
         }
         var levelReward=undefined;
         for(var val of dailyReward){
-            log.info(levelReward==undefined)
-            if(levelReward==undefined){
-                levelReward=val;
-            }else if(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel']){
+            if(levelReward==undefined ||(val['StartLevel']<=level && val['StartLevel']>levelReward['StartLevel'])){
                 levelReward=val;
             }
         }
@@ -121,6 +118,8 @@ handlers.GetDailyBonus = function (args, context) {
                 };
                 server.AddUserVirtualCurrency(request)
             }else if(levelReward.RewardType=="BoosterPack"){
+                log.info(1)
+                log.info(today.pattern("yyyy-MM-dd hh:mm:ss"))
                 log.info("DailyReward"+today.pattern("yyyy-MM-dd hh:mm:ss"));
                 request = {
                     PlayFabId:currentPlayerId,
