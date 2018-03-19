@@ -97,7 +97,7 @@ handlers.GetDailyBonus = function (args, context) {
         };
         let dailyRewardsResult=server.GetTitleData(request);
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
-            return {status:"reward not exist",code:400};
+            return {status:"reward not exist",code:500};
         }else{
             var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0];
         }
@@ -126,12 +126,11 @@ handlers.GetDailyBonus = function (args, context) {
                     Annotation:"DailyReward"
                 };
                 let grantItemsResult=server.GrantItemsToUser(request);
-                log.info(grantItemsResult)
-                if(!grantItemsResult.ItemGrantResults.Result){
-                    return {status:"grant error",code:400};
+                if(!grantItemsResult.ItemGrantResults[0].Result){
+                    return {status:"grant error",code:500};
                 }
                 qdResID=levelReward.QDResID;
-                itemInstanceId=grantItemsResult.ItemGrantResults.ItemInstanceId
+                itemInstanceId=grantItemsResult.ItemGrantResults[0].ItemInstanceId
             }
         }
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
