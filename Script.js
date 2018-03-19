@@ -97,7 +97,6 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyRewards"]
         };
         let dailyRewardsResult=server.GetTitleData(request)
-        log.info(dailyRewardsResult)
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
@@ -105,6 +104,7 @@ handlers.GetDailyBonus = function (args, context) {
         }
         var levelReward=undefined;
         for(var val of dailyReward){
+            log.info(val)
             if(levelReward==undefined){
                 levelReward=val
             }else if(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel']){
