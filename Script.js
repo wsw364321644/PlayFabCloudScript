@@ -74,7 +74,10 @@ handlers.GetDailyBonus = function (args, context) {
         }else if(checkonly){
             return{status:"ok",code:200,
                 data:{
-                    hascheckin:false
+                    hascheckin:false,
+                    BonusCount:dailyInfo.BonusCount,
+                    LastCheckinTime:dailyInfo.LastCheckinTime,
+                    LevelList:dailyInfo.LevelList
                 }}
         }
 
