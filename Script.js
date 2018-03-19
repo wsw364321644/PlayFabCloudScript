@@ -1,23 +1,3 @@
-Date.prototype.Format = function (fmt) { //author: meizz
-    var o = {
-        "M+": this.getMonth() + 1, //月份
-        "d+": this.getDate(), //日
-        "h+": this.getHours(), //小时
-        "m+": this.getMinutes(), //分
-        "s+": this.getSeconds(), //秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    }
-    for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt))
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-
-}
-
 handlers.Info = function (args, context) {
     var arrayOfStrings=[];
     let serviceInfo;
@@ -117,7 +97,7 @@ handlers.GetDailyBonus = function (args, context) {
         };
         let dailyRewardsResult=server.GetTitleData(request);
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
-            return {status:"reward not exist",code:201};
+            return {status:"reward not exist",code:400};
         }else{
             var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0];
         }
@@ -129,6 +109,8 @@ handlers.GetDailyBonus = function (args, context) {
         }
         log.info(levelReward)
         /**********************begin to award **************************/
+        let qdResID=null
+        let itemInstanceId=null
         if(levelReward){
             if(levelReward.RewardType=="VirtualCurrency"){
                 request = {
@@ -138,16 +120,17 @@ handlers.GetDailyBonus = function (args, context) {
                 };
                 server.AddUserVirtualCurrency(request)
             }else if(levelReward.RewardType=="BoosterPack"){
-                log.info(1)
-                log.info(today.Format("yyyy-MM-dd"))
-                log.info("DailyReward"+today.Format("yyyy-MM-dd"));
                 request = {
                     PlayFabId:currentPlayerId,
                     ItemIds:[levelReward.ItemId],
-                    Annotation:"DailyReward"+today.Format("yyyy-MM-dd")
+                    Annotation:"DailyReward"
                 };
-                let grantItemsResult=server.GrantItemsToUser(request)
-                log.info(grantItemsResult);
+                let grantItemsResult=server.GrantItemsToUser(request);
+                if(!grantItemsResult.ItemGrantResults.Result){
+                    return {status:"grant error",code:400};
+                }
+                qdResID=levelReward.QDResID;
+                itemInstanceId=grantItemsResult.ItemGrantResults.ItemInstanceId
             }
         }
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
@@ -169,9 +152,12 @@ handlers.GetDailyBonus = function (args, context) {
         let updateResult=server.UpdateUserReadOnlyData(request);
         return {status:"ok",code:200,
             data:{
+                hascheckin:false,
                 BonusCount:dailyInfo.BonusCount,
                 LastCheckinTime:dailyInfo.LastCheckinTime,
-                RewardLevels:dailyInfo.RewardLevels
+                RewardLevels:dailyInfo.RewardLevels,
+                QDResID:qdResID,
+                ItemInstanceId:itemInstanceId
             }}
     }catch (ex) {
         log.error(ex);
