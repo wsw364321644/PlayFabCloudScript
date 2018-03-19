@@ -44,7 +44,6 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyInfo"]
         };
         let dailyInfoResult=server.GetUserReadOnlyData(request)
-
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
         }else{
@@ -87,7 +86,7 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["Challenges:V7.0"]
         };
         let challengesResult=server.GetUserReadOnlyData(request)
-        log.info("challengesResult"+challengesResult)
+        log.info(challengesResult)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             var level=challenges.Level
@@ -98,12 +97,16 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             Keys: ["DailyRewards"]
         };
-        let dailyRewards=server.GetTitleData(request)
-        log.info(dailyRewards)
-        if(!dailyRewards.Data.hasOwnProperty("DailyRewards")){
+        let dailyRewardsResult=server.GetTitleData(request)
+        log.info(dailyRewardsResult)
+        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
-            var dailyReward=dailyRewards.Data.DailyRewards[today.getDay().toString()]
+            log.info(dailyRewardsResult.Data.DailyRewards)
+            let dailyRewards=JSON.parse(dailyRewardsResult.Data.DailyRewards)
+            log.info(dailyRewards)
+            log.info(today.getDay().toString())
+            var dailyReward=dailyRewards[today.getDay().toString()]
         }
         log.info(dailyReward)
 
