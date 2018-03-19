@@ -102,9 +102,11 @@ handlers.GetDailyBonus = function (args, context) {
             var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0];
         }
         var levelReward=undefined;
-
         for(var val of dailyReward){
-            if(levelReward==undefined ||(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel'])){
+            log.info(levelReward==undefined)
+            if(levelReward==undefined){
+                levelReward=val;
+            }else if(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel']){
                 levelReward=val;
             }
         }
