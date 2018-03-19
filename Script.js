@@ -126,6 +126,7 @@ handlers.GetDailyBonus = function (args, context) {
                     Annotation:"DailyReward"
                 };
                 let grantItemsResult=server.GrantItemsToUser(request);
+                log.info(grantItemsResult)
                 if(!grantItemsResult.ItemGrantResults.Result){
                     return {status:"grant error",code:400};
                 }
