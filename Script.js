@@ -113,8 +113,6 @@ handlers.GetDailyBonus = function (args, context) {
             }
         }
         log.info(levelReward)
-
-}
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
         &&today.getDate()-lastCheckinTime.getDate()<7){
