@@ -85,7 +85,6 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["Challenges:V7.0"]
         };
         let challengesResult=server.GetUserReadOnlyData(request)
-        log.info(challengesResult)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             var level=challenges.Level
@@ -103,8 +102,9 @@ handlers.GetDailyBonus = function (args, context) {
             var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0]
         }
         var levelReward=undefined;
+        log.info(level)
         for(var val of dailyReward){
-            log.info(val)
+            log.info(val['StartLevel'])
             if(levelReward==undefined){
                 levelReward=val
             }else if(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel']){
