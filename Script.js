@@ -102,11 +102,9 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
-            log.info(JSON.parse(dailyRewardsResult.Data.DailyRewards))
-            log.info(today.getDay().toString())
-            var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[today.getDay().toString()]
+            var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0]
         }
-
+        log.info(dailyReward)
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
         &&today.getDate()-lastCheckinTime.getDate()<7){
