@@ -93,7 +93,7 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             level=0
         }
-
+        log.info(typeof(today))
         request = {
             Keys: ["DailyRewards"]
         };
