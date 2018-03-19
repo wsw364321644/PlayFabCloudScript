@@ -63,6 +63,7 @@ handlers.GetDailyBonus = function (args, context) {
                 couldCheckin=false
             }
         }
+        print(couldCheckin)
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
@@ -86,6 +87,7 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["Challenges:V7.0"]
         };
         let challengesResult=server.GetUserReadOnlyData(request)
+        print(challengesResult)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             var level=challenges.Level
