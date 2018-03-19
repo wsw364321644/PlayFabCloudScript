@@ -91,7 +91,7 @@ handlers.GetDailyBonus = function (args, context) {
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             var level=challenges.Level
         }else{
-            level=0
+            var level=0
         }
 
         request = {
@@ -104,7 +104,17 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0]
         }
-        log.info(dailyReward)
+        var levelReward=undefined;
+        for(var val of dailyReward){
+            if(levelReward==undefined){
+                levelReward=val
+            }else if(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel']){
+                levelReward=val
+            }
+        }
+        log.info(levelReward)
+
+}
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
         &&today.getDate()-lastCheckinTime.getDate()<7){
