@@ -69,7 +69,7 @@ handlers.GetDailyBonus = function (args, context) {
                     hascheckin:true,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
-                    LevelList:dailyInfo.LevelList
+                    RewardLevels:dailyInfo.RewardLevels
                 }}
         }else if(checkonly){
             return{status:"ok",code:200,
@@ -77,7 +77,7 @@ handlers.GetDailyBonus = function (args, context) {
                     hascheckin:false,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
-                    LevelList:dailyInfo.LevelList
+                    RewardLevels:dailyInfo.RewardLevels
                 }}
         }
 
@@ -92,14 +92,26 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             level=0
         }
+
+        request = {
+            Keys: ["DailyRewards"]
+        };
+        let dailyRewards=server.GetTitleData(request)
+        if(!dailyRewards.Data.hasOwnProperty("DailyRewards")){
+            return {status:"reward not exist",code:201};
+        }else{
+            var dailyReward=dailyRewards.Data.DailyRewards[today.getDay().toString()]
+        }
+        print(dailyReward)
+
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
         &&today.getDate()-lastCheckinTime.getDate()<7){
             dailyInfo.BonusCount+=1;
-            dailyInfo.LevelList.push(level)
+            dailyInfo.RewardLevels.push(level)
         }else{
             dailyInfo.BonusCount=1;
-            dailyInfo.LevelList=[level]
+            dailyInfo.RewardLevels=[level]
         }
         dailyInfo.LastCheckinTime=Date.now()/1000;
         request = {
@@ -113,7 +125,7 @@ handlers.GetDailyBonus = function (args, context) {
             data:{
                 BonusCount:dailyInfo.BonusCount,
                 LastCheckinTime:dailyInfo.LastCheckinTime,
-                LevelList:dailyInfo.LevelList
+                RewardLevels:dailyInfo.RewardLevels
             }}
     }catch (ex) {
         log.error(ex);
