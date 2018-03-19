@@ -62,7 +62,6 @@ handlers.GetDailyBonus = function (args, context) {
                 couldCheckin=false
             }
         }
-
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
@@ -80,7 +79,7 @@ handlers.GetDailyBonus = function (args, context) {
                     RewardLevels:dailyInfo.RewardLevels
                 }}
         }
-
+        /**********************prepare to award **************************/
         request = {
             PlayFabId: currentPlayerId,
             Keys: ["Challenges:V7.0"]
@@ -113,6 +112,26 @@ handlers.GetDailyBonus = function (args, context) {
             }
         }
         log.info(levelReward)
+        /**********************begin to award **************************/
+        if(levelReward){
+            if(levelReward.RewardType=="VirtualCurrency"){
+                request = {
+                    PlayFabId:currentPlayerId,
+                    VirtualCurrency:levelReward.PlayfabCurrency,
+                    Amount:levelReward.Amount
+                };
+                server.AddUserVirtualCurrency(request)
+            }else if(levelReward.RewardType=="BoosterPack"){
+                log.info("DailyReward"+today.pattern("yyyy-MM-dd hh:mm:ss"));
+                request = {
+                    PlayFabId:currentPlayerId,
+                    ItemIds:[levelReward.ItemId],
+                    Annotation:"DailyReward"+today.pattern("yyyy-MM-dd hh:mm:ss")
+                };
+                let grantItemsResult=server.GrantItemsToUser(request)
+                log.info(grantItemsResult);
+            }
+        }
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
         &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
         &&today.getDate()-lastCheckinTime.getDate()<7){
