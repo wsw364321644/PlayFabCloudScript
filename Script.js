@@ -87,9 +87,7 @@ handlers.GetDailyBonus = function (args, context) {
         let challengesResult=server.GetUserReadOnlyData(request)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
-            log.info(challenges);
             var level=challenges.Level;
-            log.info(level);
         }else{
             var level=0;
         }
@@ -97,7 +95,7 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             Keys: ["DailyRewards"]
         };
-        let dailyRewardsResult=server.GetTitleData(request)
+        let dailyRewardsResult=server.GetTitleData(request);
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:201};
         }else{
@@ -106,8 +104,6 @@ handlers.GetDailyBonus = function (args, context) {
         var levelReward=undefined;
 
         for(var val of dailyReward){
-            log.info(val['StartLevel']<level);
-            log.info(val['StartLevel']>levelReward['StartLevel']);
             if(levelReward==undefined ||(val['StartLevel']<level && val['StartLevel']>levelReward['StartLevel'])){
                 levelReward=val;
             }
