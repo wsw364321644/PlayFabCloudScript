@@ -58,10 +58,12 @@ handlers.GetDailyBonus = function (args, context) {
         if(dailyInfo.hasOwnProperty("LastCheckinTime")){
             var lastCheckinTime =new Date(dailyInfo.LastCheckinTime*1000);
             var today = new Date();
+            log.info(typeof(today))
             if(lastCheckinTime.getYear()==today.getYear()&&lastCheckinTime.getMonth()==today.getMonth()&&lastCheckinTime.getDate()==today.getDate()){
                 couldCheckin=false
             }
         }
+        log.info(typeof(today))
 
         if(!couldCheckin){
             return {status:"already checkin",code:200,
@@ -93,7 +95,7 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             level=0
         }
-        log.info(typeof(today))
+
         request = {
             Keys: ["DailyRewards"]
         };
@@ -103,7 +105,6 @@ handlers.GetDailyBonus = function (args, context) {
             return {status:"reward not exist",code:201};
         }else{
             let dailyRewards=JSON.parse(dailyRewardsResult.Data.DailyRewards)
-            log.info(1)
             log.info(typeof(today))
             log.info(today)
             var dailyReward=dailyRewards[today.getDay().toString()]
