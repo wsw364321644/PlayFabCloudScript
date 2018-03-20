@@ -50,7 +50,7 @@ handlers.GetDailyBonus = function (args, context) {
             if (checkonly)
                 return{status:"ok",code:200,
                     data:{
-                        hascheckin:false
+                        HasNew:true
                     }}
             var dailyInfo={};
         }
@@ -65,7 +65,7 @@ handlers.GetDailyBonus = function (args, context) {
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
-                    hascheckin:true,
+                    HasNew:false,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels
@@ -73,7 +73,7 @@ handlers.GetDailyBonus = function (args, context) {
         }else if(checkonly){
             return{status:"ok",code:200,
                 data:{
-                    hascheckin:false,
+                    HasNew:true,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels
@@ -152,7 +152,7 @@ handlers.GetDailyBonus = function (args, context) {
         let updateResult=server.UpdateUserReadOnlyData(request);
         return {status:"ok",code:200,
             data:{
-                hascheckin:false,
+                HasNew:false,
                 BonusCount:dailyInfo.BonusCount,
                 LastCheckinTime:dailyInfo.LastCheckinTime,
                 RewardLevels:dailyInfo.RewardLevels,
