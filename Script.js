@@ -52,7 +52,11 @@ handlers.GetDailyBonus = function (args, context) {
                     data:{
                         HasNew:true
                     }}
-            var dailyInfo={};
+            var dailyInfo={
+                BonusCount:0,
+                RewardLevels:[],
+                LastCheckinTime:0
+            };
         }
         let couldCheckin=true;
         var today = new Date();
@@ -99,11 +103,11 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
         }else{
-            var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[0];
+            var dailyReward=JSON.parse(dailyRewardsResult.Data.DailyRewards)[dailyInfo.BonusCount.toString()];
         }
         var levelReward=undefined;
         for(var val of dailyReward){
-            if(levelReward==undefined ||(val['StartLevel']<=level && val['StartLevel']>levelReward['StartLevel'])){
+            if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
             }
         }
