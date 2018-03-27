@@ -44,11 +44,13 @@ function calcLevelReward(dailyRewards,dailyInfo,today) {
 
         }
     }
+    log.info(1);
     for(let val of dailyReward){
         if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
             levelReward=val;
         }
     }
+    log.info(levelReward);
     return levelReward
 }
 
