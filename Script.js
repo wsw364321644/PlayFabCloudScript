@@ -48,9 +48,8 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
         }
     }
     if(specialDailyRewards){
-        let specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount-1).toString()];
+        var specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount-1).toString()];
         for(let val of specialDailyReward){
-            log.info(levelReward==undefined)
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
             }
@@ -66,7 +65,8 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
         }
     }
     return {LevelReward:levelReward,
-        UseSpecialReward:specialDailyReward!=null}
+        UseSpecialReward:specialDailyRewards!=null,
+        SpecialDailyReward:specialDailyReward}
 }
 
 handlers.GetDailyBonus = function (args, context) {
@@ -80,8 +80,16 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyInfo"]
         };
         let dailyInfoResult=server.GetUserReadOnlyData(request)
+        var today = new Date();
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
+            if(!(dailyInfo.hasOwnProperty("LastCheckinTime")
+            &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
+            &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
+                dailyInfo.BonusCount=0;
+                dailyInfo.RewardLevels=[]
+                dailyInfo.SpecialBonusCount=0
+            }
         }else{
             if (checkonly)
                 return{status:"ok",code:200,
@@ -96,15 +104,15 @@ handlers.GetDailyBonus = function (args, context) {
             };
         }
         let couldCheckin=true;
-        var today = new Date();
         if(dailyInfo.hasOwnProperty("LastCheckinTime")){
-            var lastCheckinTime =new Date(dailyInfo.LastCheckinTime*1000);
+            var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
             if(lastCheckinTime.getFullYear()==today.getFullYear()
             &&lastCheckinTime.getUTCMonth()==today.getUTCMonth()
             &&lastCheckinTime.getUTCDate()==today.getUTCDate()){
                 couldCheckin=false
             }
         }
+
         if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:{
@@ -112,7 +120,8 @@ handlers.GetDailyBonus = function (args, context) {
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels,
-                    SpecialBonusCount:dailyInfo.SpecialBonusCount
+                    SpecialBonusCount:dailyInfo.SpecialBonusCount,
+                    SpecialDailyReward:dailyInfo.SpecialDailyReward
                 }}
         }else if(checkonly){
             return{status:"ok",code:200,
@@ -121,7 +130,8 @@ handlers.GetDailyBonus = function (args, context) {
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels,
-                    SpecialBonusCount:dailyInfo.SpecialBonusCount
+                    SpecialBonusCount:dailyInfo.SpecialBonusCount,
+                    SpecialDailyReward:dailyInfo.SpecialDailyReward
                 }}
         }
         /**********************prepare to award **************************/
@@ -136,18 +146,9 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             var level=0;
         }
-
-        if(dailyInfo.hasOwnProperty("LastCheckinTime")
-        &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
-        &&today.getTime()-lastCheckinTime.getTime()<7*dayofms){
-            dailyInfo.BonusCount+=1;
-            dailyInfo.RewardLevels.push(level)
-        }else{
-            dailyInfo.BonusCount=1;
-            dailyInfo.RewardLevels=[level]
-            dailyInfo.SpecialBonusCount=0
-        }
-        dailyInfo.LastCheckinTime=today.getTime()/1000;
+        dailyInfo.BonusCount+=1;
+        dailyInfo.RewardLevels.push(level)
+        dailyInfo.LastCheckinTime=today.getTime();
 
         request = {
             Keys: ["DailyRewards"]
@@ -162,6 +163,7 @@ handlers.GetDailyBonus = function (args, context) {
         log.info(levelRewardRes)
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
+            dailyInfo.SpecialDailyReward=levelRewardRes.SpecialDailyReward
         }
         /**********************begin to award **************************/
         let qdResID=null
@@ -203,7 +205,8 @@ handlers.GetDailyBonus = function (args, context) {
                 RewardLevels:dailyInfo.RewardLevels,
                 SpecialBonusCount:dailyInfo.SpecialBonusCount,
                 QDResID:qdResID,
-                ItemInstanceId:itemInstanceId
+                ItemInstanceId:itemInstanceId,
+                SpecialDailyReward:dailyInfo.SpecialDailyReward
             }}
     }catch (ex) {
         log.error(ex);
