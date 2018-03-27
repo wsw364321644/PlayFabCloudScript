@@ -206,7 +206,7 @@ handlers.GetDailyBonus = function (args, context) {
                 SpecialBonusCount:dailyInfo.SpecialBonusCount,
                 QDResID:qdResID,
                 ItemInstanceId:itemInstanceId,
-                SpecialDailyReward:dailyInfo.SpecialDailyRewards
+                SpecialDailyRewards:dailyInfo.SpecialDailyRewards
             }}
     }catch (ex) {
         log.error(ex);
