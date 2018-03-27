@@ -102,8 +102,7 @@ handlers.GetDailyBonus = function (args, context) {
             if(dailyInfo.hasOwnProperty("LastCheckinTime")){
                 var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
             }
-            if(!(dailyInfo.hasOwnProperty("LastCheckinTime")
-            &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
+            if(lastCheckinTime&&!((today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
             &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
                 dailyInfo.BonusCount=0;
                 dailyInfo.RewardLevels=[];
@@ -122,7 +121,7 @@ handlers.GetDailyBonus = function (args, context) {
         }
         let couldCheckin=true;
 
-        if(lastCheckinTime.getFullYear()==today.getFullYear()
+        if(lastCheckinTime&&lastCheckinTime.getFullYear()==today.getFullYear()
         &&lastCheckinTime.getUTCMonth()==today.getUTCMonth()
         &&lastCheckinTime.getUTCDate()==today.getUTCDate()){
             couldCheckin=false
