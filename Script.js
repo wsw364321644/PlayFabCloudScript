@@ -76,7 +76,7 @@ handlers.GetDailyBonus = function (args, context) {
                 BonusCount:0,
                 RewardLevels:[],
                 LastCheckinTime:0,
-                :0
+                SpecialBonusCount:0
             };
         }
         let couldCheckin=true;
