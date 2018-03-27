@@ -128,9 +128,11 @@ handlers.GetDailyBonus = function (args, context) {
         }
 
         if(checkonly&&!couldCheckin){
+            log.info(1)
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
+            log.info(2)
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
         }else if(checkonly){
