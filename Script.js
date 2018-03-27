@@ -69,7 +69,23 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
         SpecialDailyRewards:specialDailyRewards}
 }
 
+
 handlers.GetDailyBonus = function (args, context) {
+    function createData(hasNew,dailyInfo) {
+        let data={HasNew:hasNew};
+        if(dailyInfo.hasOwnProperty('BonusCount')){
+            data.BonusCount=dailyInfo.BonusCount;
+            data.RewardLevels=dailyInfo.RewardLevels;
+            data.SpecialBonusCount=dailyInfo.SpecialBonusCount;
+            if(dailyInfo.hasOwnProperty('LastCheckinTime')){
+                data.LastCheckinTime=dailyInfo.LastCheckinTime;
+            }
+            if(dailyInfo.SpecialBonusCount>0){
+                data.SpecialDailyRewards:dailyInfo.SpecialDailyRewards;
+            }
+        }
+        return data;
+    }
     try{
         let checkonly=false;
         if (args && args.checkonly){
@@ -115,24 +131,10 @@ handlers.GetDailyBonus = function (args, context) {
 
         if(!couldCheckin){
             return {status:"already checkin",code:200,
-                data:{
-                    HasNew:false,
-                    BonusCount:dailyInfo.BonusCount,
-                    LastCheckinTime:dailyInfo.LastCheckinTime,
-                    RewardLevels:dailyInfo.RewardLevels,
-                    SpecialBonusCount:dailyInfo.SpecialBonusCount,
-                    SpecialDailyRewards:dailyInfo.SpecialDailyRewards
-                }}
+                data:createData(false,dailyInfo)}
         }else if(checkonly){
             return{status:"ok",code:200,
-                data:{
-                    HasNew:true,
-                    BonusCount:dailyInfo.BonusCount,
-                    LastCheckinTime:dailyInfo.LastCheckinTime,
-                    RewardLevels:dailyInfo.RewardLevels,
-                    SpecialBonusCount:dailyInfo.SpecialBonusCount,
-                    SpecialDailyRewards:dailyInfo.SpecialDailyRewards
-                }}
+                data:createData(true,dailyInfo)}
         }
         /**********************prepare to award **************************/
         request = {
@@ -197,17 +199,11 @@ handlers.GetDailyBonus = function (args, context) {
             }
         };
         let updateResult=server.UpdateUserReadOnlyData(request);
+        let res=createData(false,dailyInfo);
+        res.QDResID=qdResID;
+        res.ItemInstanceId=itemInstanceId;
         return {status:"ok",code:200,
-            data:{
-                HasNew:false,
-                BonusCount:dailyInfo.BonusCount,
-                LastCheckinTime:dailyInfo.LastCheckinTime,
-                RewardLevels:dailyInfo.RewardLevels,
-                SpecialBonusCount:dailyInfo.SpecialBonusCount,
-                QDResID:qdResID,
-                ItemInstanceId:itemInstanceId,
-                SpecialDailyRewards:dailyInfo.SpecialDailyRewards
-            }}
+            data:res}
     }catch (ex) {
         log.error(ex);
         return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
