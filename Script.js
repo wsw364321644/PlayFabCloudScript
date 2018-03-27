@@ -37,19 +37,18 @@ function calcLevelReward(dailyRewards,dailyInfo,today) {
     let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()];
     let specialDailyReward=null;
     let levelReward=null;
-    for( var val of dailyRewards['SpecialDailyRewards']){
+    for(let val of dailyRewards['SpecialDailyRewards']){
         if(val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
             let startDate=Date(val.StartDate);
             log.info(startDate);
 
         }
     }
-    for(var val of dailyReward){
+    for(let val of dailyReward){
         if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
             levelReward=val;
         }
     }
-    log.info(levelReward);
     return levelReward
 }
 
