@@ -33,7 +33,7 @@ handlers.Info = function (args, context) {
     }
 };
 
-function calcLevelReward(dailyRewards,dailyInfo,today) {
+function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()];
     let specialDailyReward=null;
     let levelReward=null;
@@ -138,7 +138,7 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
         }else{
-            var levelReward=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today);
+            var levelReward=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today,level);
         }
         log.info(levelReward)
         if(levelReward.hasOwnProperty("UseSpecialReward")&&levelReward.UsespecialReward){
