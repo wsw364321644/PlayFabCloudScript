@@ -36,21 +36,19 @@ handlers.Info = function (args, context) {
 const dayofms=86400000
 
 function calcLevelReward(dailyRewards,dailyInfo,today,level) {
-    let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()];
-    let specialDailyReward=null;
+    let specialDailyRewards=null;
     let levelReward=null;
     for(let val of dailyRewards['SpecialDailyRewards']){
         if(val.hasOwnProperty('UseSpecialReward')&&val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
-            let startDate=new Date(val.StartDate.replace(/-/g,"/"));
-            log.info(new Date(val.StartDate))
+            let startDate=new Date(val.StartDate)
             if(startDate.getTime()<today.getTime()&&(startDate.getTime()+val.Duration*dayofms)>today.getTime()){
-                specialDailyReward=val;
+                specialDailyRewards=val;
                 break;
             }
         }
     }
-    log.info(specialDailyReward)
-    if(specialDailyReward){
+    if(specialDailyRewards){
+        let specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount-1).toString()];
         for(let val of specialDailyReward){
             log.info(levelReward==undefined)
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
@@ -60,6 +58,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     }
     log.info(levelReward)
     if(!levelReward){
+        let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()]
         for(let val of dailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
