@@ -99,6 +99,9 @@ handlers.GetDailyBonus = function (args, context) {
         var today = new Date();
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
             var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
+            if(dailyInfo.hasOwnProperty("LastCheckinTime")){
+                var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
+            }
             if(!(dailyInfo.hasOwnProperty("LastCheckinTime")
             &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
             &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
@@ -118,21 +121,16 @@ handlers.GetDailyBonus = function (args, context) {
             };
         }
         let couldCheckin=true;
-        if(dailyInfo.hasOwnProperty("LastCheckinTime")){
-            var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
-            if(lastCheckinTime.getFullYear()==today.getFullYear()
-            &&lastCheckinTime.getUTCMonth()==today.getUTCMonth()
-            &&lastCheckinTime.getUTCDate()==today.getUTCDate()){
-                couldCheckin=false
-            }
-        }
 
+        if(lastCheckinTime.getFullYear()==today.getFullYear()
+        &&lastCheckinTime.getUTCMonth()==today.getUTCMonth()
+        &&lastCheckinTime.getUTCDate()==today.getUTCDate()){
+            couldCheckin=false
+        }
         if(checkonly&&!couldCheckin){
-            log.info(1)
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
-            log.info(2)
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
         }else if(checkonly){
