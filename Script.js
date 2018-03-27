@@ -109,9 +109,7 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             if (checkonly)
                 return{status:"ok",code:200,
-                    data:{
-                        HasNew:true
-                    }}
+                    data:{HasNew:true}}
             var dailyInfo={
                 BonusCount:0,
                 RewardLevels:[],
@@ -129,12 +127,15 @@ handlers.GetDailyBonus = function (args, context) {
             }
         }
 
-        if(!couldCheckin){
+        if(checkonly&&!couldCheckin){
+            return{status:"already checkin",code:200,
+                data:{HasNew:false}}
+        }else if(!couldCheckin){
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
         }else if(checkonly){
             return{status:"ok",code:200,
-                data:createData(true,dailyInfo)}
+                data:{HasNew:true}}
         }
         /**********************prepare to award **************************/
         request = {
