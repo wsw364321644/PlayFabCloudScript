@@ -66,7 +66,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     }
     return {LevelReward:levelReward,
         UseSpecialReward:specialDailyRewards!=null,
-        SpecialDailyReward:specialDailyReward}
+        SpecialDailyRewards:specialDailyRewards}
 }
 
 handlers.GetDailyBonus = function (args, context) {
@@ -121,7 +121,7 @@ handlers.GetDailyBonus = function (args, context) {
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels,
                     SpecialBonusCount:dailyInfo.SpecialBonusCount,
-                    SpecialDailyReward:dailyInfo.SpecialDailyReward
+                    SpecialDailyRewards:dailyInfo.SpecialDailyRewards
                 }}
         }else if(checkonly){
             return{status:"ok",code:200,
@@ -131,7 +131,7 @@ handlers.GetDailyBonus = function (args, context) {
                     LastCheckinTime:dailyInfo.LastCheckinTime,
                     RewardLevels:dailyInfo.RewardLevels,
                     SpecialBonusCount:dailyInfo.SpecialBonusCount,
-                    SpecialDailyReward:dailyInfo.SpecialDailyReward
+                    SpecialDailyRewards:dailyInfo.SpecialDailyRewards
                 }}
         }
         /**********************prepare to award **************************/
@@ -163,7 +163,7 @@ handlers.GetDailyBonus = function (args, context) {
         log.info(levelRewardRes)
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
-            dailyInfo.SpecialDailyReward=levelRewardRes.SpecialDailyReward
+            dailyInfo.SpecialDailyRewards=levelRewardRes.SpecialDailyRewards
         }
         /**********************begin to award **************************/
         let qdResID=null
@@ -206,7 +206,7 @@ handlers.GetDailyBonus = function (args, context) {
                 SpecialBonusCount:dailyInfo.SpecialBonusCount,
                 QDResID:qdResID,
                 ItemInstanceId:itemInstanceId,
-                SpecialDailyReward:dailyInfo.SpecialDailyReward
+                SpecialDailyReward:dailyInfo.SpecialDailyRewards
             }}
     }catch (ex) {
         log.error(ex);
