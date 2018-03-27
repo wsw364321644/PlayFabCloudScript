@@ -42,12 +42,14 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     for(let val of dailyRewards['SpecialDailyRewards']){
         if(val.hasOwnProperty('UseSpecialReward')&&val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
             let startDate=Date(val.StartDate);
+            log.info(startDate)
             if(startDate.getTime()<today.getTime()&&startDate.getTime()+dayofms>today.getTime()){
                 specialDailyReward=val;
                 break;
             }
         }
     }
+    log.info(specialDailyReward)
     if(specialDailyReward){
         for(let val of specialDailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
@@ -55,6 +57,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
             }
         }
     }
+    log.info(levelReward)
     if(!levelReward){
         for(let val of dailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
