@@ -134,11 +134,10 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyRewards"]
         };
         let dailyRewardsResult=server.GetTitleData(request);
-        log.info(dailyRewardsResult,dailyInfo,today)
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
         }else{
-            var levelReward=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards));
+            var levelReward=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today);
         }
         log.info(levelReward)
         if(levelReward.hasOwnProperty("UseSpecialReward")&&levelReward.UsespecialReward){
