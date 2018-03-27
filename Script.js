@@ -106,8 +106,8 @@ handlers.GetDailyBonus = function (args, context) {
             &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
             &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
                 dailyInfo.BonusCount=0;
-                dailyInfo.RewardLevels=[]
-                dailyInfo.SpecialBonusCount=0
+                dailyInfo.RewardLevels=[];
+                dailyInfo.SpecialBonusCount=0;
             }
         }else{
             if (checkonly)
