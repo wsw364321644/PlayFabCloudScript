@@ -39,10 +39,9 @@ function calcLevelReward(dailyRewards,dailyInfo,today) {
     let levelReward=null;
     for( var val of dailyRewards['SpecialDailyRewards']){
         if(val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
+            let startDate=Date(val.StartDate);
+            log.info(startDate);
 
-            let startDate=Date(val.StartDate)
-            log.info(startDate)
-            log.info(val.a)
         }
     }
     for(var val of dailyReward){
@@ -50,7 +49,8 @@ function calcLevelReward(dailyRewards,dailyInfo,today) {
             levelReward=val;
         }
     }
-    return levelReward;
+    log.info(levelReward);
+    return levelReward
 }
 
 handlers.GetDailyBonus = function (args, context) {
