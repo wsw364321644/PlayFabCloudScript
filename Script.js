@@ -33,25 +33,37 @@ handlers.Info = function (args, context) {
     }
 };
 
+const dayofms=86400000
+
 function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()];
     let specialDailyReward=null;
     let levelReward=null;
     for(let val of dailyRewards['SpecialDailyRewards']){
-        if(val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
+        if(val.hasOwnProperty('UseSpecialReward')&&val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
             let startDate=Date(val.StartDate);
-            log.info(startDate);
-
+            if(startDate.getTime()<today.getTime()&&startDate.getTime()+dayofms>today.getTime()){
+                specialDailyReward=val;
+                break;
+            }
         }
     }
-    log.info(dailyReward);
-    for(let val of dailyReward){
-        if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
-            levelReward=val;
+    if(specialDailyReward){
+        for(let val of specialDailyReward){
+            if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
+                levelReward=val;
+            }
         }
     }
-    log.info(levelReward);
-    return levelReward
+    if(!levelReward){
+        for(let val of dailyReward){
+            if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
+                levelReward=val;
+            }
+        }
+    }
+    return {LevelReward:levelReward,
+        UseSpecialReward:specialDailyReward!=null}
 }
 
 handlers.GetDailyBonus = function (args, context) {
@@ -84,7 +96,9 @@ handlers.GetDailyBonus = function (args, context) {
         var today = new Date();
         if(dailyInfo.hasOwnProperty("LastCheckinTime")){
             var lastCheckinTime =new Date(dailyInfo.LastCheckinTime*1000);
-            if(lastCheckinTime.getYear()==today.getYear()&&lastCheckinTime.getMonth()==today.getMonth()&&lastCheckinTime.getDate()==today.getDate()){
+            if(lastCheckinTime.getFullYear()==today.getFullYear()
+            &&lastCheckinTime.getUTCMonth()==today.getUTCMonth()
+            &&lastCheckinTime.getUTCDate()==today.getUTCDate()){
                 couldCheckin=false
             }
         }
@@ -103,7 +117,8 @@ handlers.GetDailyBonus = function (args, context) {
                     HasNew:true,
                     BonusCount:dailyInfo.BonusCount,
                     LastCheckinTime:dailyInfo.LastCheckinTime,
-                    RewardLevels:dailyInfo.RewardLevels
+                    RewardLevels:dailyInfo.RewardLevels,
+                    SpecialBonusCount:dailyInfo.SpecialBonusCount
                 }}
         }
         /**********************prepare to award **************************/
@@ -120,8 +135,8 @@ handlers.GetDailyBonus = function (args, context) {
         }
 
         if(dailyInfo.hasOwnProperty("LastCheckinTime")
-        &&(today.getDay()==0?7:today.getDay())>lastCheckinTime.getDay()
-        &&today.getDate()-lastCheckinTime.getDate()<7){
+        &&(today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
+        &&today.getTime()-lastCheckinTime.getTime()<7*dayofms){
             dailyInfo.BonusCount+=1;
             dailyInfo.RewardLevels.push(level)
         }else{
@@ -129,7 +144,7 @@ handlers.GetDailyBonus = function (args, context) {
             dailyInfo.RewardLevels=[level]
             dailyInfo.SpecialBonusCount=0
         }
-        dailyInfo.LastCheckinTime=Date.now()/1000;
+        dailyInfo.LastCheckinTime=today.getTime()/1000;
 
         request = {
             Keys: ["DailyRewards"]
@@ -138,10 +153,11 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
         }else{
-            var levelReward=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today,level);
+            var levelRewardRes=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today,level);
+            var levelReward=levelRewardRes.LevelReward
         }
-        log.info(levelReward)
-        if(levelReward.hasOwnProperty("UseSpecialReward")&&levelReward.UsespecialReward){
+        log.info(levelRewardRes)
+        if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
         }
         /**********************begin to award **************************/
