@@ -102,8 +102,9 @@ handlers.GetDailyBonus = function (args, context) {
             if(dailyInfo.hasOwnProperty("LastCheckinTime")){
                 var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
             }
-            log.info(!((today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
-            &&today.getTime()-lastCheckinTime.getTime()<7*dayofms));
+            log.info(today.getUTCDay())
+            log.info(lastCheckinTime.getUTCDay())
+            log.info(today.getTime()-lastCheckinTime.getTime()<7*dayofms);
             if(lastCheckinTime&&!((today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
             &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
                 dailyInfo.BonusCount=0;
