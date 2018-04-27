@@ -111,14 +111,6 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyRewards"]
         };
         let dailyRewardsResult=server.GetTitleData(request);
-        let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
-        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
-            return {status:"reward not exist",code:500};
-        }else{
-            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
-        }
-        log.info(levelRewardRes)
-
         return true
     }
     function InitialDailyInfo() {
@@ -171,7 +163,7 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
-            res=prepareAward()
+            prepareAward()
             if(res!=true) return res;
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
@@ -179,18 +171,26 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"ok",code:200,
                 data:{HasNew:true}}
         }
-        res=prepareAward()
-        if(res!=true) return res;
+        prepareAward()
         /**********************begin to award **************************/
         dailyInfo.BonusCount+=1;
         dailyInfo.RewardLevels.push(level)
         dailyInfo.LastCheckinTime=today.getTime();
+        let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
+        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
+            return {status:"reward not exist",code:500};
+        }else{
+            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
+        }
+        log.info(levelRewardRes)
+
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
             dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
         }else{
             dailyInfo.SpecialIndex=null;
         }
+
 
         let qdResID=null
         let itemInstanceId=null
