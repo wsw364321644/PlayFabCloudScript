@@ -77,6 +77,7 @@ handlers.GetDailyBonus = function (args, context) {
     var level=0;
     var levelRewardRes=null;
     var dailyInfo;
+    let res;
     function createData(hasNew,dailyInfo) {
         let data={HasNew:hasNew};
         if(dailyInfo.hasOwnProperty('BonusCount')){
@@ -105,9 +106,6 @@ handlers.GetDailyBonus = function (args, context) {
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
             level=challenges.Level;
         }
-        dailyInfo.BonusCount+=1;
-        dailyInfo.RewardLevels.push(level)
-        dailyInfo.LastCheckinTime=today.getTime();
 
         request = {
             Keys: ["DailyRewards"]
@@ -120,12 +118,7 @@ handlers.GetDailyBonus = function (args, context) {
             levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
         }
         log.info(levelRewardRes)
-        if(levelRewardRes.UseSpecialReward){
-            dailyInfo.SpecialBonusCount+=1;
-            dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
-        }else{
-            dailyInfo.SpecialIndex=null;
-        }
+
         return true
     }
     function InitialDailyInfo() {
@@ -178,7 +171,7 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
-            let res=prepareAward()
+            res=prepareAward()
             if(res!=true) return res;
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
@@ -186,9 +179,19 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"ok",code:200,
                 data:{HasNew:true}}
         }
-        let res=prepareAward()
+        res=prepareAward()
         if(res!=true) return res;
         /**********************begin to award **************************/
+        dailyInfo.BonusCount+=1;
+        dailyInfo.RewardLevels.push(level)
+        dailyInfo.LastCheckinTime=today.getTime();
+        if(levelRewardRes.UseSpecialReward){
+            dailyInfo.SpecialBonusCount+=1;
+            dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
+        }else{
+            dailyInfo.SpecialIndex=null;
+        }
+
         let qdResID=null
         let itemInstanceId=null
         var levelReward=levelRewardRes.LevelReward
