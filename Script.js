@@ -76,7 +76,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
 handlers.GetDailyBonus = function (args, context) {
     var level=0;
     var levelRewardRes=null;
-    var dailyInfo;
+    var dailyInfo,dailyRewardsResult;
     let res;
     function createData(hasNew,dailyInfo) {
         let data={HasNew:hasNew};
@@ -110,8 +110,7 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             Keys: ["DailyRewards"]
         };
-        let dailyRewardsResult=server.GetTitleData(request);
-        return true
+        dailyRewardsResult=server.GetTitleData(request);
     }
     function InitialDailyInfo() {
         return {
