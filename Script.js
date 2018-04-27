@@ -117,6 +117,7 @@ handlers.GetDailyBonus = function (args, context) {
         }else{
             let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
             levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo.BonusCount-1,today,level);
+            log.info(levelRewardRes);
         }
     }
     function InitialDailyInfo() {
