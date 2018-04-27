@@ -223,7 +223,7 @@ handlers.GetDailyBonus = function (args, context) {
             data:res}
     }catch (ex) {
         log.error(ex);
-        return {status:ex.apiErrorInfo.apiError.error,code:ex.apiErrorInfo.apiError.errorCode};
+        return {status:"error",detail:ex};
     }
 
 };
