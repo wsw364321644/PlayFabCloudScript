@@ -38,6 +38,7 @@ const dayofms=86400000
 function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     let specialDailyRewards=null;
     let levelReward=null;
+    let specialIndex=0;
     for(let val of dailyRewards['SpecialDailyRewards']){
         if(val.hasOwnProperty('UseSpecialReward')&&val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
             let startDate=new Date(val.StartDate)
@@ -46,6 +47,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
                 break;
             }
         }
+        specialIndex++;
     }
     if(specialDailyRewards){
         var specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount-1).toString()];
@@ -66,7 +68,8 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     }
     return {LevelReward:levelReward,
         UseSpecialReward:specialDailyRewards!=null,
-        SpecialDailyRewards:specialDailyRewards}
+        SpecialDailyRewards:specialDailyRewards,
+        SpecialIndex:specialIndex}
 }
 
 
@@ -80,14 +83,48 @@ handlers.GetDailyBonus = function (args, context) {
             if(dailyInfo.hasOwnProperty('LastCheckinTime')){
                 data.LastCheckinTime=dailyInfo.LastCheckinTime;
             }
-            if(dailyInfo.SpecialBonusCount>0){
-                data.SpecialDailyRewards=dailyInfo.SpecialDailyRewards;
+            if(dailyInfo.SpecialIndex>0){
+                data.SpecialDailyRewards=levelRewardRes.specialDailyRewards;
             }
         }
         return data;
     }
     function getIndexOfCycle(data) {
         return (data.getUTCDay()==0?7:data.getUTCDay());
+    }
+    function prepareAward() {
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["Challenges:V7.0"]
+        };
+        let challengesResult=server.GetUserReadOnlyData(request)
+        if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
+            var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
+            var level=challenges.Level;
+        }else{
+            var level=0;
+        }
+        dailyInfo.BonusCount+=1;
+        dailyInfo.RewardLevels.push(level)
+        dailyInfo.LastCheckinTime=today.getTime();
+
+        request = {
+            Keys: ["DailyRewards"]
+        };
+        let dailyRewardsResult=server.GetTitleData(request);
+        let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
+        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
+            return {status:"reward not exist",code:500};
+        }else{
+            var levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
+            var levelReward=levelRewardRes.LevelReward
+        }
+        log.info(levelRewardRes)
+        if(levelRewardRes.UseSpecialReward){
+            dailyInfo.SpecialBonusCount+=1;
+            dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
+        }
+        return true
     }
     try{
         let checkonly=false;
@@ -137,43 +174,16 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
+            let res=prepareAward()
+            if(res!=true) return res;
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
         }else if(checkonly){
             return{status:"ok",code:200,
                 data:{HasNew:true}}
         }
-        /**********************prepare to award **************************/
-        request = {
-            PlayFabId: currentPlayerId,
-            Keys: ["Challenges:V7.0"]
-        };
-        let challengesResult=server.GetUserReadOnlyData(request)
-        if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
-            var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
-            var level=challenges.Level;
-        }else{
-            var level=0;
-        }
-        dailyInfo.BonusCount+=1;
-        dailyInfo.RewardLevels.push(level)
-        dailyInfo.LastCheckinTime=today.getTime();
-
-        request = {
-            Keys: ["DailyRewards"]
-        };
-        let dailyRewardsResult=server.GetTitleData(request);
-        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
-            return {status:"reward not exist",code:500};
-        }else{
-            var levelRewardRes=calcLevelReward(JSON.parse(dailyRewardsResult.Data.DailyRewards),dailyInfo,today,level);
-            var levelReward=levelRewardRes.LevelReward
-        }
-        log.info(levelRewardRes)
-        if(levelRewardRes.UseSpecialReward){
-            dailyInfo.SpecialBonusCount+=1;
-            dailyInfo.SpecialDailyRewards=levelRewardRes.SpecialDailyRewards
-        }
+        let res=prepareAward()
+        if(res!=true) return res;
         /**********************begin to award **************************/
         let qdResID=null
         let itemInstanceId=null
