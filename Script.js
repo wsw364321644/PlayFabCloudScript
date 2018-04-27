@@ -86,6 +86,9 @@ handlers.GetDailyBonus = function (args, context) {
         }
         return data;
     }
+    function getIndexOfCycle(data) {
+        return (data.getUTCDay()==0?7:data.getUTCDay());
+    }
     try{
         let checkonly=false;
         if (args && args.checkonly){
@@ -101,10 +104,13 @@ handlers.GetDailyBonus = function (args, context) {
             var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
             if(dailyInfo.hasOwnProperty("LastCheckinTime")){
                 var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
+                lastCheckinTime.setUTCHours(0,0,0,0)
             }
-            if(lastCheckinTime&&!((today.getUTCDay()==0?7:today.getUTCDay())>lastCheckinTime.getUTCDay()
-            ||today.getUTCDate()==lastCheckinTime.getUTCDate()
-            &&today.getTime()-lastCheckinTime.getTime()<7*dayofms)){
+            if(lastCheckinTime
+            &&(!(getIndexOfCycle(today)>=getIndexOfCycle(lastCheckinTime)&&today.getTime()-lastCheckinTime.getTime()<7*dayofms)
+            ||dailyInfo.BonusCount>getIndexOfCycle(lastCheckinTime)
+            ||(dailyInfo.RewardLevels&&dailyInfo.RewardLevels.length!=dailyInfo.BonusCount))
+            ){
                 dailyInfo.BonusCount=0;
                 dailyInfo.RewardLevels=[];
                 dailyInfo.SpecialBonusCount=0;
