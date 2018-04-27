@@ -74,6 +74,8 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
 
 
 handlers.GetDailyBonus = function (args, context) {
+    var level=0;
+    var levelRewardRes=null;
     function createData(hasNew,dailyInfo) {
         let data={HasNew:hasNew};
         if(dailyInfo.hasOwnProperty('BonusCount')){
@@ -84,7 +86,9 @@ handlers.GetDailyBonus = function (args, context) {
                 data.LastCheckinTime=dailyInfo.LastCheckinTime;
             }
             if(dailyInfo.SpecialIndex>0){
+                log.info(3);
                 data.SpecialDailyRewards=levelRewardRes.specialDailyRewards;
+                log.info(4);
             }
         }
         return data;
@@ -100,9 +104,7 @@ handlers.GetDailyBonus = function (args, context) {
         let challengesResult=server.GetUserReadOnlyData(request)
         if(challengesResult.Data.hasOwnProperty("Challenges:V7.0")){
             var challenges=JSON.parse(challengesResult.Data['Challenges:V7.0'].Value);
-            var level=challenges.Level;
-        }else{
-            var level=0;
+            level=challenges.Level;
         }
         dailyInfo.BonusCount+=1;
         dailyInfo.RewardLevels.push(level)
@@ -116,8 +118,7 @@ handlers.GetDailyBonus = function (args, context) {
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
         }else{
-            var levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
-            var levelReward=levelRewardRes.LevelReward
+            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
         }
         log.info(levelRewardRes)
         if(levelRewardRes.UseSpecialReward){
@@ -126,6 +127,7 @@ handlers.GetDailyBonus = function (args, context) {
         }
         return true
     }
+
     try{
         let checkonly=false;
         if (args && args.checkonly){
@@ -187,6 +189,7 @@ handlers.GetDailyBonus = function (args, context) {
         /**********************begin to award **************************/
         let qdResID=null
         let itemInstanceId=null
+        var levelReward=levelRewardRes.LevelReward
         if(levelReward){
             if(levelReward.RewardType=="VirtualCurrency"){
                 request = {
