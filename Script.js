@@ -79,7 +79,6 @@ handlers.GetDailyBonus = function (args, context) {
     var dailyInfo;
     let res;
     function createData(hasNew,dailyInfo) {
-        log.info(dailyInfo);
         let data={HasNew:hasNew};
         if(dailyInfo.hasOwnProperty('BonusCount')){
             data.BonusCount=dailyInfo.BonusCount;
@@ -172,8 +171,7 @@ handlers.GetDailyBonus = function (args, context) {
                 data:{HasNew:false}}
         }else if(!couldCheckin){
             res=prepareAward()
-            log.info(res)
-            if(res!=true) return res;
+            if(res) return res;
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
         }else if(checkonly){
