@@ -123,6 +123,8 @@ handlers.GetDailyBonus = function (args, context) {
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
             dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
+        }else{
+            dailyInfo.SpecialIndex=null;
         }
         return true
     }
@@ -132,7 +134,7 @@ handlers.GetDailyBonus = function (args, context) {
             RewardLevels:[],
             LastCheckinTime:0,
             SpecialBonusCount:0,
-            SpecialIndex:0
+            SpecialIndex:null
         }
     }
     try{
