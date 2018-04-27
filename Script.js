@@ -42,9 +42,6 @@ function calcLevelReward(dailyRewards,day,today,level) {
     for(let val of dailyRewards['SpecialDailyRewards']){
         if(val.hasOwnProperty('UseSpecialReward')&&val.UseSpecialReward&&val.hasOwnProperty("StartDate")){
             let startDate=new Date(val.StartDate)
-            log.info(startDate.getTime())
-            log.info(today.getTime())
-            log.info(startDate.getTime()+val.Duration*dayofms)
             if(startDate.getTime()<today.getTime()&&(startDate.getTime()+val.Duration*dayofms)>today.getTime()){
                 specialDailyRewards=val;
                 break;
