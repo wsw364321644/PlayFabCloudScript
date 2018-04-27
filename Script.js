@@ -110,7 +110,7 @@ handlers.GetDailyBonus = function (args, context) {
         request = {
             Keys: ["DailyRewards"]
         };
-        dailyRewardsResult=server.GetTitleData(request);
+        let dailyRewardsResult=server.GetTitleData(request);
 
         if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
             return {status:"reward not exist",code:500};
