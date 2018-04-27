@@ -50,7 +50,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
         specialIndex++;
     }
     if(specialDailyRewards){
-        var specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount-1).toString()];
+        var specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount).toString()];
         for(let val of specialDailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
@@ -59,7 +59,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     }
     log.info(levelReward)
     if(!levelReward){
-        let dailyReward=dailyRewards[(dailyInfo.BonusCount-1).toString()]
+        let dailyReward=dailyRewards[(dailyInfo.BonusCount).toString()]
         for(let val of dailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
@@ -76,7 +76,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
 handlers.GetDailyBonus = function (args, context) {
     var level=0;
     var levelRewardRes=null;
-    var dailyInfo,dailyRewardsResult;
+    var dailyInfo;
     let res;
     function createData(hasNew,dailyInfo) {
         let data={HasNew:hasNew};
@@ -111,6 +111,13 @@ handlers.GetDailyBonus = function (args, context) {
             Keys: ["DailyRewards"]
         };
         dailyRewardsResult=server.GetTitleData(request);
+
+        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
+            return {status:"reward not exist",code:500};
+        }else{
+            let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
+            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
+        }
     }
     function InitialDailyInfo() {
         return {
@@ -162,7 +169,7 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"already checkin",code:200,
                 data:{HasNew:false}}
         }else if(!couldCheckin){
-            prepareAward()
+            res=prepareAward()
             if(res!=true) return res;
             return {status:"already checkin",code:200,
                 data:createData(false,dailyInfo)}
@@ -170,19 +177,13 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"ok",code:200,
                 data:{HasNew:true}}
         }
-        prepareAward()
+        res=prepareAward()
+        if(res) return res;
         /**********************begin to award **************************/
         dailyInfo.BonusCount+=1;
         dailyInfo.RewardLevels.push(level)
         dailyInfo.LastCheckinTime=today.getTime();
-        let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
-        if(!dailyRewardsResult.Data.hasOwnProperty("DailyRewards")){
-            return {status:"reward not exist",code:500};
-        }else{
-            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
-        }
         log.info(levelRewardRes)
-
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
             dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
