@@ -35,7 +35,7 @@ handlers.Info = function (args, context) {
 
 const dayofms=86400000
 
-function calcLevelReward(dailyRewards,dailyInfo,today,level) {
+function calcLevelReward(dailyRewards,day,today,level) {
     let specialDailyRewards=null;
     let levelReward=null;
     let specialIndex=0;
@@ -50,7 +50,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
         specialIndex++;
     }
     if(specialDailyRewards){
-        var specialDailyReward=specialDailyRewards[(dailyInfo.BonusCount).toString()];
+        var specialDailyReward=specialDailyRewards[day.toString()];
         for(let val of specialDailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
@@ -59,7 +59,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
     }
     log.info(levelReward)
     if(!levelReward){
-        let dailyReward=dailyRewards[(dailyInfo.BonusCount).toString()]
+        let dailyReward=dailyRewards[day.toString()]
         for(let val of dailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
                 levelReward=val;
@@ -116,7 +116,7 @@ handlers.GetDailyBonus = function (args, context) {
             return {status:"reward not exist",code:500};
         }else{
             let dailyRewardsJson=JSON.parse(dailyRewardsResult.Data.DailyRewards)
-            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo,today,level);
+            levelRewardRes=calcLevelReward(dailyRewardsJson,dailyInfo.BonusCount-1,today,level);
         }
     }
     function InitialDailyInfo() {
@@ -177,13 +177,13 @@ handlers.GetDailyBonus = function (args, context) {
             return{status:"ok",code:200,
                 data:{HasNew:true}}
         }
-        res=prepareAward()
-        if(res) return res;
+
         /**********************begin to award **************************/
         dailyInfo.BonusCount+=1;
         dailyInfo.RewardLevels.push(level)
         dailyInfo.LastCheckinTime=today.getTime();
-        log.info(levelRewardRes)
+        res=prepareAward()
+        if(res) return res;
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
             dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
