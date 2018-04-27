@@ -58,10 +58,7 @@ function calcLevelReward(dailyRewards,day,today,level) {
         }
     }
     log.info(levelReward)
-    log.info(day)
-    log.info(day.toString())
     if(!levelReward){
-        log.info(1)
         let dailyReward=dailyRewards[day.toString()]
         for(let val of dailyReward){
             if(val['StartLevel']<=level &&(levelReward==undefined ||val['StartLevel']>levelReward['StartLevel']) ){
@@ -69,7 +66,6 @@ function calcLevelReward(dailyRewards,day,today,level) {
             }
         }
     }
-    log.info(2)
     return {LevelReward:levelReward,
         UseSpecialReward:specialDailyRewards!=null,
         SpecialDailyRewards:specialDailyRewards,
@@ -83,6 +79,7 @@ handlers.GetDailyBonus = function (args, context) {
     var dailyInfo;
     let res;
     function createData(hasNew,dailyInfo) {
+        log.info(dailyInfo)
         let data={HasNew:hasNew};
         if(dailyInfo.hasOwnProperty('BonusCount')){
             data.BonusCount=dailyInfo.BonusCount;
