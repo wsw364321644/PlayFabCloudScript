@@ -76,6 +76,7 @@ function calcLevelReward(dailyRewards,dailyInfo,today,level) {
 handlers.GetDailyBonus = function (args, context) {
     var level=0;
     var levelRewardRes=null;
+    var dailyInfo;
     function createData(hasNew,dailyInfo) {
         let data={HasNew:hasNew};
         if(dailyInfo.hasOwnProperty('BonusCount')){
@@ -85,7 +86,7 @@ handlers.GetDailyBonus = function (args, context) {
             if(dailyInfo.hasOwnProperty('LastCheckinTime')){
                 data.LastCheckinTime=dailyInfo.LastCheckinTime;
             }
-            if(dailyInfo.SpecialIndex>0){
+            if(dailyInfo.SpecialIndex){
                 data.SpecialDailyRewards=levelRewardRes.specialDailyRewards;
             }
         }
@@ -125,7 +126,15 @@ handlers.GetDailyBonus = function (args, context) {
         }
         return true
     }
-
+    function InitialDailyInfo() {
+        return {
+            BonusCount:0,
+            RewardLevels:[],
+            LastCheckinTime:0,
+            SpecialBonusCount:0,
+            SpecialIndex:0
+        }
+    }
     try{
         let checkonly=false;
         if (args && args.checkonly){
@@ -138,7 +147,7 @@ handlers.GetDailyBonus = function (args, context) {
         let dailyInfoResult=server.GetUserReadOnlyData(request)
         var today = new Date();
         if(dailyInfoResult.Data.hasOwnProperty("DailyInfo")){
-            var dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
+            dailyInfo=JSON.parse(dailyInfoResult.Data.DailyInfo.Value);
             if(dailyInfo.hasOwnProperty("LastCheckinTime")){
                 var lastCheckinTime =new Date(dailyInfo.LastCheckinTime);
                 lastCheckinTime.setUTCHours(0,0,0,0)
@@ -148,20 +157,13 @@ handlers.GetDailyBonus = function (args, context) {
             ||dailyInfo.BonusCount>getIndexOfCycle(lastCheckinTime)
             ||(dailyInfo.RewardLevels&&dailyInfo.RewardLevels.length!=dailyInfo.BonusCount))
             ){
-                dailyInfo.BonusCount=0;
-                dailyInfo.RewardLevels=[];
-                dailyInfo.SpecialBonusCount=0;
+                dailyInfo=InitialDailyInfo();
             }
         }else{
             if (checkonly)
                 return{status:"ok",code:200,
                     data:{HasNew:true}}
-            var dailyInfo={
-                BonusCount:0,
-                RewardLevels:[],
-                LastCheckinTime:0,
-                SpecialBonusCount:0
-            };
+            dailyInfo=InitialDailyInfo();
         }
         let couldCheckin=true;
 
