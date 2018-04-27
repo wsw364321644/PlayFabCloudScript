@@ -216,7 +216,7 @@ handlers.GetDailyBonus = function (args, context) {
             }
         };
         let updateResult=server.UpdateUserReadOnlyData(request);
-        let res=createData(false,dailyInfo);
+        res=createData(false,dailyInfo);
         res.QDResID=qdResID;
         res.ItemInstanceId=itemInstanceId;
         return {status:"ok",code:200,
