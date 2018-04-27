@@ -86,9 +86,7 @@ handlers.GetDailyBonus = function (args, context) {
                 data.LastCheckinTime=dailyInfo.LastCheckinTime;
             }
             if(dailyInfo.SpecialIndex>0){
-                log.info(3);
                 data.SpecialDailyRewards=levelRewardRes.specialDailyRewards;
-                log.info(4);
             }
         }
         return data;
