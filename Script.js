@@ -181,10 +181,10 @@ handlers.GetDailyBonus = function (args, context) {
 
         /**********************begin to award **************************/
         dailyInfo.BonusCount+=1;
-        dailyInfo.RewardLevels.push(level)
         dailyInfo.LastCheckinTime=today.getTime();
         res=prepareAward()
         if(res) return res;
+        dailyInfo.RewardLevels.push(level)
         if(levelRewardRes.UseSpecialReward){
             dailyInfo.SpecialBonusCount+=1;
             dailyInfo.SpecialIndex=levelRewardRes.SpecialIndex
