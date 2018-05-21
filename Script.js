@@ -238,17 +238,23 @@ handlers.GetDailyBonus = function (args, context) {
 };
 
 handlers.GetGameServerRegions = function (args, context) {
-    return {"Regions": [{"Available": true, "Name": "Australia", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
+    return {"Regions": [
+        {"Available": true, "Name": "Australia", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "APSouthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
+        {"Available": true, "Name": "Singapore", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "USWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "USEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "SAEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "China", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "EUWest", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
+        {"Available": true, "Name": "Japan", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
         {"Available": true, "Name": "APNorthEast", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0},
-        {"Available": true, "Name": "USCentral", "GameCount": 1, "GameModes": [{"GameCount": 1, "GameMode": "3346578531", "GamePlayersCount": 1}], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 1}]}
+        {"Available": true, "Name": "USCentral", "GameCount": 0, "GameModes": [], "PingUrl": "http://118.190.45.37:8000/ping", "GamePlayersCount": 0}]};
 };
 
+handlers.GetRegionPlaylists = function (args, context) {
+    return {"Playlists": []};
+};
 // This is a simple example of making a web request to an external HTTP API.
 handlers.makeHTTPRequest = function (args, context) {
     var headers = {
