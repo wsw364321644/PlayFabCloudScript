@@ -256,18 +256,22 @@ handlers.GetRegionPlaylists = function (args, context) {
     return {"Playlists": []};
 };
 // This is a simple example of making a web request to an external HTTP API.
-handlers.makeHTTPRequest = function (args, context) {
+handlers.ExportMasterPlayerData = function (args, context) {
+    let TitleID=null;
+    if (args && args.TitleID&&typeof(args.TitleID)=="string"&&args.TitleID.length==4){
+        TitleID = args.TitleID;
+    }else{
+        return {status:"error",detail:"error param"}
+    }
     var headers = {
-        "X-MyCustomHeader": "Some Value"
+        "X-SecretKey": "OX5JGKG5KI6FQZXFROJAE6T3OKPIOKA43D3KI35D13KGBSSBKE"
     };
 
     var body = {
-        input: args,
-        userId: currentPlayerId,
-        mode: "foobar"
+        PlayFabId: currentPlayerId
     };
 
-    var url = "http://httpbin.org/status/200";
+    var url = "https://"+TitleID+".playfabapi.com/Admin/ExportMasterPlayerData";
     var content = JSON.stringify(body);
     var httpMethod = "post";
     var contentType = "application/json";
