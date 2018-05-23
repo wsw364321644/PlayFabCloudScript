@@ -278,6 +278,7 @@ handlers.ExportMasterPlayerData = function (args, context) {
 
     // The pre-defined http object makes synchronous HTTP requests
     var response = http.request(url, httpMethod, content, contentType, headers);
+    response=JSON.parse(response)
     return response;
 };
 
