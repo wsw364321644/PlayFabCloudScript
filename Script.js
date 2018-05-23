@@ -278,7 +278,7 @@ handlers.ExportMasterPlayerData = function (args, context) {
 
     // The pre-defined http object makes synchronous HTTP requests
     var response = http.request(url, httpMethod, content, contentType, headers);
-    return { responseContent: response };
+    return response;
 };
 
 // This is a simple example of a function that is called from a
