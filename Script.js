@@ -127,12 +127,12 @@ handlers.SoldOutItems = function (args, context) {
         function contains(array, obj) 
         {
             log.info("enter check same");
-            var i = arr.length;
             for(var value of array)
             {
                 if (value == obj) 
                     return true;
             }
+            log.info("exit check same")
             return false;
         }
 
@@ -146,11 +146,18 @@ handlers.SoldOutItems = function (args, context) {
                 if (m_OutputFusionId == obj) 
                 {
                     if(m_UberInventorySource != 0)
+                    {
+                        log.info("exit check hasUberSource")
                         return m_UberInventorySource;
+                    }
                     else
+                    {
+                        log.info("exit check hasUberSource")
                         return 0;
+                    }
                 }
             }
+            log.info("exit check hasUberSource")
             return 0;
         }
 
@@ -162,9 +169,8 @@ handlers.SoldOutItems = function (args, context) {
         {
             finalInfo = InitialSoldInfo();
         }
-
+        
         log.info(finalInfo);
-
 
         request = {
             PlayFabId : currentPlayerId,
