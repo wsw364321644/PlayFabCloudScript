@@ -166,11 +166,14 @@ handlers.SoldOutItems = function (args, context) {
 
         log.info(finalInfo);
 
+
         request = {
             PlayFabId : currentPlayerId,
-            VirtualCurrency : BC,
+            VirtualCurrency : "BC",
             Amount : 0
         };
+
+        log.info("create currency request success");
 
         for(var id in idList)
         {
@@ -181,7 +184,7 @@ handlers.SoldOutItems = function (args, context) {
             }
             else
             {
-                let m_UberSource = hasUberSource(m_Fusions, id)
+                let m_UberSource = hasUberSource(m_Fusions, id);
                 if(m_UberSource != 0)
                     finalInfo.KeysToConsume.push(m_UberSource);
                 else
