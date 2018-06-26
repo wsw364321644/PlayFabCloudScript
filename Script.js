@@ -81,6 +81,16 @@ handlers.SoldOutItems = function (args, context) {
         };
         let soldOutInfo = server.GetUserReadOnlyData(request);
 
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["LootInventory_UnSecure:V7.0"]
+        };
+        let m_InventoryUnSecure = server.GetUserReadOnlyData(request);
+        var m_Fusion_UnSecure = JSON.parse(inventoryUnSecure.Data.['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
+        var m_Fusions = JSON.parse(Fusion_UnSecure).Fusions;
+
+        log.info(m_Fusions);
+
         function InitialSoldInfo()
         {
             return {
@@ -102,6 +112,24 @@ handlers.SoldOutItems = function (args, context) {
             return false;
         }
 
+        function hasUberSource(array, obj)
+        {
+            var i = arr.length;
+            while (i--) 
+            {
+                var m_OutputFusionId = JSON.parse(arr[i]).OutputFusionId;
+                var m_UberInventorySource = JSON.parse(arr[i]).m_UberInventorySource;
+                if (m_OutputFusionId === obj) 
+                {
+                    if(m_UberInventorySource != 0)
+                        return m_UberInventorySource;
+                    else
+                        return 0;
+                }
+            }
+            return 0;
+        }
+
         let isSecureEmpty = false;
         if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo"))
         {
@@ -116,7 +144,10 @@ handlers.SoldOutItems = function (args, context) {
 
         let idList = null;
         if(args && args.Keys)
+        {
+            log.info(args)
             idList = args,Keys;
+        }
 
         request = {
             PlayFabId : currentPlayerId,
@@ -128,9 +159,15 @@ handlers.SoldOutItems = function (args, context) {
         {
             log.info(id);
             if(contains(finalInfo.SoldItems, id))
+            {
                 return;
+            }
             else
+            {
+                //if(hasUberSource(m_Fusions, id))
+                //    finalInfo.SoldItems.push(id);
                 finalInfo.SoldItems.push(id);
+            }
             request.Amount = request.Amount + 800;
         }
 
