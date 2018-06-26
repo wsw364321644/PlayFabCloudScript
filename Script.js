@@ -72,6 +72,84 @@ function calcLevelReward(dailyRewards,day,today,level) {
         SpecialIndex:specialIndex}
 }
 
+handlers.SoldOutItems = function (args, context) {
+    var finalInfo;
+    try {
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["SoldOutInfo"]
+        };
+        let soldOutInfo = server.GetUserReadOnlyData(request);
+
+        function InitialSoldInfo()
+        {
+            return {
+                KeysToConsume:[],
+                SoldItems:[]
+            }
+        }
+
+        function contains(arr, obj) 
+        {
+            var i = arr.length;
+            while (i--) 
+            {
+                if (arr[i] === obj) 
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        let isSecureEmpty = false;
+        if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo"))
+        {
+            finalInfo = JSON.parse(soldOutInfo.Data.SoldOutInfo.Value);
+        }
+        else
+        {
+            finalInfo = InitialSoldInfo();
+        }
+
+        log.info(finalInfo);
+
+        let idList = null;
+        if(args && args.Keys)
+            idList = args,Keys;
+
+        request = {
+            PlayFabId : currentPlayerId,
+            VirtualCurrency : levelReward.PlayfabCurrency,
+            Amount : 0
+        };
+
+        for(var id in idList)
+        {
+            log.info(id);
+            if(contains(finalInfo.SoldItems, id))
+                return;
+            else
+                finalInfo.SoldItems.push(id);
+            request.Amount = request.Amount + 800;
+        }
+
+        server.AddUserVirtualCurrency(request)
+
+        request = {
+            PlayFabId: currentPlayerId,
+            Data: {
+                SoldOutInfo:JSON.stringify(finalInfo)
+            }
+        };
+        let updateResult=server.UpdateUserReadOnlyData(request);
+        return {status:"ok",code:200}
+    }catch (ex) {
+        log.error(ex);
+        return {status:"error",detail:ex};
+    }
+}
+
 
 handlers.GetDailyBonus = function (args, context) {
     var level=0;
