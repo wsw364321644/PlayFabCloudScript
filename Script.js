@@ -143,10 +143,11 @@ handlers.SoldOutItems = function (args, context) {
         log.info(finalInfo);
 
         let idList = null;
-        if(args && args.Keys)
+        if(args)
         {
-            log.info(args)
-            idList = args,Keys;
+            log.info(args);
+            if(args.Keys)
+                idList = args,Keys;
         }
 
         request = {
