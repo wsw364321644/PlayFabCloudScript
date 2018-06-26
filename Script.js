@@ -124,27 +124,26 @@ handlers.SoldOutItems = function (args, context) {
             }
         }
 
-        function contains(arr, obj) 
+        function contains(array, obj) 
         {
+            log.info("enter check same");
             var i = arr.length;
-            while (i--) 
+            for(var value of array)
             {
-                if (arr[i] === obj) 
-                {
+                if (value == obj) 
                     return true;
-                }
             }
             return false;
         }
 
         function hasUberSource(array, obj)
         {
-            var i = arr.length;
-            while (i--) 
+            log.info("enter check hasUberSource");
+            for(var value of array)
             {
-                var m_OutputFusionId = JSON.parse(arr[i]).OutputFusionId;
-                var m_UberInventorySource = JSON.parse(arr[i]).UberInventorySource;
-                if (m_OutputFusionId === obj) 
+                var m_OutputFusionId = JSON.parse(value).OutputFusionId;
+                var m_UberInventorySource = JSON.parse(value).UberInventorySource;
+                if (m_OutputFusionId == obj) 
                 {
                     if(m_UberInventorySource != 0)
                         return m_UberInventorySource;
@@ -175,12 +174,12 @@ handlers.SoldOutItems = function (args, context) {
 
         log.info("create currency request success");
 
-        for(var id in idList)
+        for(var id of idList)
         {
             log.info(id);
             if(contains(finalInfo.SoldItems, id))
             {
-                return;
+                return {status:"error",detail:"id illeague"};
             }
             else
             {
