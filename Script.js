@@ -112,14 +112,12 @@ handlers.SoldOutItems = function (args, context) {
         {
             log.info("hasOwnProperty InventoryUnSecure");
             m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value);
-            log.info(m_Fusion_UnSecure);
-            var temp1 = JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure)
-            var temp2 = JSON.parse(temp1)
-            m_Fusions = temp2.Fusions;
-            log.info(m_Fusions);
+            log.info(m_Fusion_UnSecure.Fusion_UnSecure);
+            var temp = JSON.parse(JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure));
+            m_Fusions = temp.Fusions;
+
+            log.info("parse InventoryUnSecure success");
         }
-        
-        log.info("parse InventoryUnSecure success");
 
         function InitialSoldInfo()
         {
@@ -146,8 +144,10 @@ handlers.SoldOutItems = function (args, context) {
             log.info("enter check hasUberSource");
             for(var value of array)
             {
-                var m_OutputFusionId = JSON.parse(value).OutputFusionId;
-                var m_UberInventorySource = JSON.parse(value).UberInventorySource;
+                log.info(value);
+                var m_content = JSON.parse(JSON.stringify(value));
+                var m_OutputFusionId = m_content.OutputFusionId;
+                var m_UberInventorySource = m_content.UberInventorySource;
                 if (m_OutputFusionId == obj) 
                 {
                     if(m_UberInventorySource != 0)
