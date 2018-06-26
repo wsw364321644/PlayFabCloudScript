@@ -111,8 +111,12 @@ handlers.SoldOutItems = function (args, context) {
         if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
         {
             log.info("hasOwnProperty InventoryUnSecure");
-            m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
-            m_Fusions = JSON.parse(m_Fusion_UnSecure).Fusions;
+            m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value);
+            log.info(m_Fusion_UnSecure);
+            var temp1 = JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure)
+            var temp2 = JSON.parse(temp1)
+            m_Fusions = temp2.Fusions;
+            log.info(m_Fusions);
         }
         
         log.info("parse InventoryUnSecure success");
@@ -193,7 +197,7 @@ handlers.SoldOutItems = function (args, context) {
                 let m_UberSource = 0;
                 if(m_Fusions)
                     m_UberSource = hasUberSource(m_Fusions, id);
-                
+
                 if(m_UberSource != 0)
                     finalInfo.KeysToConsume.push(m_UberSource);
                 else
