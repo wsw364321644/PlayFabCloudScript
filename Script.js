@@ -104,15 +104,15 @@ handlers.SoldOutItems = function (args, context) {
             Keys: ["LootInventory_UnSecure:V7.0"]
         };
         
-        let m_InventoryUnSecure = server.GetUserReadOnlyData(request);
+        let m_InventoryUnSecure = server.GetUserData(request);
 
         let m_Fusion_UnSecure = null;
-        let m_Fusion = null;
+        let m_Fusions = null;
         if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
         {
             log.info("hasOwnProperty InventoryUnSecure");
             m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
-            m_Fusions = JSON.parse(Fusion_UnSecure).Fusions;
+            m_Fusions = JSON.parse(m_Fusion_UnSecure).Fusions;
         }
         
         log.info("parse InventoryUnSecure success");
