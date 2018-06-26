@@ -80,7 +80,7 @@ handlers.SoldOutItems = function (args, context) {
         {
             if(args.Keys)
             {
-                idList = args,Keys;
+                idList = args.Keys;
                 log.info(idList);
             }
             else
