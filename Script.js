@@ -83,14 +83,6 @@ handlers.SoldOutItems = function (args, context) {
                 idList = args.Keys;
                 log.info(idList);
             }
-            else
-            {
-                log.info("Not Get Keys");
-            }
-        }
-        else
-        {
-            log.info("args is null");
         }
 
         let request = {
@@ -110,13 +102,10 @@ handlers.SoldOutItems = function (args, context) {
         let m_Fusions = null;
         if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
         {
-            log.info("hasOwnProperty InventoryUnSecure");
             m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value);
             log.info(m_Fusion_UnSecure.Fusion_UnSecure);
             var temp = JSON.parse(JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure));
             m_Fusions = temp.Fusions;
-
-            log.info("parse InventoryUnSecure success");
         }
 
         function InitialSoldInfo()
@@ -129,22 +118,18 @@ handlers.SoldOutItems = function (args, context) {
 
         function contains(array, obj) 
         {
-            log.info("enter check same");
             for(var value of array)
             {
                 if (value == obj) 
                     return true;
             }
-            log.info("exit check same")
             return false;
         }
 
         function hasUberSource(array, obj)
         {
-            log.info("enter check hasUberSource");
             for(var value of array)
             {
-                log.info(value);
                 var m_content = JSON.parse(JSON.stringify(value));
                 var m_OutputFusionId = m_content.OutputFusionId;
                 var m_UberInventorySource = m_content.UberInventorySource;
@@ -152,17 +137,14 @@ handlers.SoldOutItems = function (args, context) {
                 {
                     if(m_UberInventorySource != 0)
                     {
-                        log.info("exit check hasUberSource")
                         return m_UberInventorySource;
                     }
                     else
                     {
-                        log.info("exit check hasUberSource")
                         return 0;
                     }
                 }
             }
-            log.info("exit check hasUberSource")
             return 0;
         }
 
@@ -182,8 +164,6 @@ handlers.SoldOutItems = function (args, context) {
             VirtualCurrency : "BC",
             Amount : 0
         };
-
-        log.info("create currency request success");
 
         for(var id of idList)
         {
@@ -206,7 +186,6 @@ handlers.SoldOutItems = function (args, context) {
             request.Amount = request.Amount + 800;
         }
 
-        log.info("start add VirtualCurrency");
         if(request.Amount != 0)
             server.AddUserVirtualCurrency(request)
 
