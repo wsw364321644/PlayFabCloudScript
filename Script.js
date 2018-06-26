@@ -75,6 +75,24 @@ function calcLevelReward(dailyRewards,day,today,level) {
 handlers.SoldOutItems = function (args, context) {
     var finalInfo;
     try {
+        let idList = null;
+        if(args)
+        {
+            if(args.Keys)
+            {
+                idList = args,Keys;
+                log.info(idList);
+            }
+            else
+            {
+                log.info("Not Get Keys");
+            }
+        }
+        else
+        {
+            log.info("args is null");
+        }
+
         let request = {
             PlayFabId: currentPlayerId,
             Keys: ["SoldOutInfo"]
@@ -139,27 +157,11 @@ handlers.SoldOutItems = function (args, context) {
 
         log.info(finalInfo);
 
-        let idList = null;
-        if(args)
-        {
-            if(args.Keys)
-            {
-                idList = args,Keys;
-                log.info("Get Keys");
-            }
-            else
-            {
-                log.info("Not Get Keys");
-            }
-        }
-        else
-        {
-            log.info("args is null");
-        }
+        
 
         request = {
             PlayFabId : currentPlayerId,
-            VirtualCurrency : levelReward.PlayfabCurrency,
+            VirtualCurrency : BC,
             Amount : 0
         };
 
@@ -193,7 +195,7 @@ handlers.SoldOutItems = function (args, context) {
         log.info(updateResult);
         return {status:"ok",code:200}
     }catch (ex) {
-        log.error(ex);
+        log.error("ERROR");
         return {status:"error",detail:ex};
     }
 }
