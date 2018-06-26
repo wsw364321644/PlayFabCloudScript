@@ -103,9 +103,18 @@ handlers.SoldOutItems = function (args, context) {
             PlayFabId: currentPlayerId,
             Keys: ["LootInventory_UnSecure:V7.0"]
         };
+        
         let m_InventoryUnSecure = server.GetUserReadOnlyData(request);
-        var m_Fusion_UnSecure = JSON.parse(inventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
-        var m_Fusions = JSON.parse(Fusion_UnSecure).Fusions;
+
+        var m_Fusion_UnSecure;
+        var m_Fusion;
+        if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
+        {
+            m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
+            m_Fusions = JSON.parse(Fusion_UnSecure).Fusions;
+        }
+        
+        log.info("parse InventoryUnSecure success");
 
         function InitialSoldInfo()
         {
@@ -157,8 +166,6 @@ handlers.SoldOutItems = function (args, context) {
 
         log.info(finalInfo);
 
-        
-
         request = {
             PlayFabId : currentPlayerId,
             VirtualCurrency : BC,
@@ -183,7 +190,9 @@ handlers.SoldOutItems = function (args, context) {
             request.Amount = request.Amount + 800;
         }
 
-        server.AddUserVirtualCurrency(request)
+        log.info("start add VirtualCurrency");
+        if(request.Amount != 0)
+            server.AddUserVirtualCurrency(request)
 
         request = {
             PlayFabId: currentPlayerId,
