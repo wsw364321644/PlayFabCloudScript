@@ -89,8 +89,6 @@ handlers.SoldOutItems = function (args, context) {
         var m_Fusion_UnSecure = JSON.parse(inventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value).Fusion_UnSecure;
         var m_Fusions = JSON.parse(Fusion_UnSecure).Fusions;
 
-        log.info(m_Fusions);
-
         function InitialSoldInfo()
         {
             return {
@@ -118,7 +116,7 @@ handlers.SoldOutItems = function (args, context) {
             while (i--) 
             {
                 var m_OutputFusionId = JSON.parse(arr[i]).OutputFusionId;
-                var m_UberInventorySource = JSON.parse(arr[i]).m_UberInventorySource;
+                var m_UberInventorySource = JSON.parse(arr[i]).UberInventorySource;
                 if (m_OutputFusionId === obj) 
                 {
                     if(m_UberInventorySource != 0)
@@ -130,7 +128,6 @@ handlers.SoldOutItems = function (args, context) {
             return 0;
         }
 
-        let isSecureEmpty = false;
         if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo"))
         {
             finalInfo = JSON.parse(soldOutInfo.Data.SoldOutInfo.Value);
@@ -145,9 +142,19 @@ handlers.SoldOutItems = function (args, context) {
         let idList = null;
         if(args)
         {
-            log.info(args);
             if(args.Keys)
+            {
                 idList = args,Keys;
+                log.info("Get Keys");
+            }
+            else
+            {
+                log.info("Not Get Keys");
+            }
+        }
+        else
+        {
+            log.info("args is null");
         }
 
         request = {
@@ -165,9 +172,11 @@ handlers.SoldOutItems = function (args, context) {
             }
             else
             {
-                //if(hasUberSource(m_Fusions, id))
-                //    finalInfo.SoldItems.push(id);
-                finalInfo.SoldItems.push(id);
+                let m_UberSource = hasUberSource(m_Fusions, id)
+                if(m_UberSource != 0)
+                    finalInfo.KeysToConsume.push(m_UberSource);
+                else
+                    finalInfo.SoldItems.push(id);
             }
             request.Amount = request.Amount + 800;
         }
@@ -180,7 +189,8 @@ handlers.SoldOutItems = function (args, context) {
                 SoldOutInfo:JSON.stringify(finalInfo)
             }
         };
-        let updateResult=server.UpdateUserReadOnlyData(request);
+        let updateResult = server.UpdateUserReadOnlyData(request);
+        log.info(updateResult);
         return {status:"ok",code:200}
     }catch (ex) {
         log.error(ex);
