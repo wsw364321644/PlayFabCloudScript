@@ -76,13 +76,11 @@ handlers.SoldOutItems = function (args, context) {
     var finalInfo;
     try {
         let idList = null;
-        if(args)
+        let totalPrice = 0;
+        if(args && args.Keys)
         {
-            if(args.Keys)
-            {
-                idList = args.Keys;
-                log.info(idList);
-            }
+            idList = args.Keys;
+            totalPrice = args.Price;
         }
 
         let request = {
@@ -103,7 +101,6 @@ handlers.SoldOutItems = function (args, context) {
         if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
         {
             m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value);
-            log.info(m_Fusion_UnSecure.Fusion_UnSecure);
             var temp = JSON.parse(JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure));
             m_Fusions = temp.Fusions;
         }
@@ -157,12 +154,10 @@ handlers.SoldOutItems = function (args, context) {
             finalInfo = InitialSoldInfo();
         }
 
-        log.info(finalInfo);
-
         request = {
             PlayFabId : currentPlayerId,
             VirtualCurrency : "BC",
-            Amount : 0
+            Amount : totalPrice
         };
 
         for(var id of idList)
@@ -183,7 +178,6 @@ handlers.SoldOutItems = function (args, context) {
                 else
                     finalInfo.SoldItems.push(id);
             }
-            request.Amount = request.Amount + 800;
         }
 
         if(request.Amount != 0)
@@ -195,8 +189,9 @@ handlers.SoldOutItems = function (args, context) {
                 SoldOutInfo:JSON.stringify(finalInfo)
             }
         };
+        
         let updateResult = server.UpdateUserReadOnlyData(request);
-        log.info(updateResult);
+
         return {status:"ok",code:200}
     }catch (ex) {
         log.error("ERROR");
