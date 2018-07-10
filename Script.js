@@ -185,7 +185,7 @@ handlers.SoldOutItems = function (args, context) {
         request = {
             PlayFabId: currentPlayerId,
             Data: {
-                SoldOutInfo:JSON.stringify(finalInfo)
+                "SoldOutInfo:V7.0":JSON.stringify(finalInfo)
             }
         };
         
