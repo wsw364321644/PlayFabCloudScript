@@ -85,7 +85,7 @@ handlers.SoldOutItems = function (args, context) {
 
         let request = {
             PlayFabId: currentPlayerId,
-            Keys: ["SoldOutInfo"]
+            Keys: ["SoldOutInfo:V7.0"]
         };
         let soldOutInfo = server.GetUserReadOnlyData(request);
 
@@ -145,9 +145,9 @@ handlers.SoldOutItems = function (args, context) {
             return 0;
         }
 
-        if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo"))
+        if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo:V7.0"))
         {
-            finalInfo = JSON.parse(soldOutInfo.Data.SoldOutInfo.Value);
+            finalInfo = JSON.parse(soldOutInfo.Data['SoldOutInfo:V7.0'].Value);
         }
         else
         {
@@ -162,7 +162,6 @@ handlers.SoldOutItems = function (args, context) {
 
         for(var id of idList)
         {
-            log.info(id);
             if(contains(finalInfo.SoldItems, id))
             {
                 return {status:"error",detail:"id illeague"};
