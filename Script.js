@@ -421,7 +421,7 @@ handlers.MigrateProfile = function (args, context) {
     // (https://api.playfab.com/playstream/docs/PlayStreamProfileModels)
     var profile = context.playerProfile;
 
-    if()
+
     var headers = {
         "X-SecretKey": "OX5JGKG5KI6FQZXFROJAE6T3OKPIOKA43D3KI35D13KGBSSBKE"
     };
