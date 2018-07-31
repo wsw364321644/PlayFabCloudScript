@@ -25,7 +25,7 @@ handlers.Info = function (args, context) {
         }
     }
     let matchmakerInfo={
-        "118.190.45.37:8001":["221.12.169.142"]
+        "118.190.45.37:8000":["221.12.169.142"]
     }
     return{
         "ServiceInfo" :serviceInfo,
