@@ -72,6 +72,132 @@ function calcLevelReward(dailyRewards,day,today,level) {
         SpecialIndex:specialIndex}
 }
 
+handlers.SoldOutItems = function (args, context) {
+    var finalInfo;
+    try {
+        let idList = null;
+        let totalPrice = 0;
+        if(args && args.Keys)
+        {
+            idList = args.Keys;
+            totalPrice = args.Price;
+        }
+
+        let request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["SoldOutInfo:V7.0"]
+        };
+        let soldOutInfo = server.GetUserReadOnlyData(request);
+
+        request = {
+            PlayFabId: currentPlayerId,
+            Keys: ["LootInventory_UnSecure:V7.0"]
+        };
+        
+        let m_InventoryUnSecure = server.GetUserData(request);
+
+        let m_Fusion_UnSecure = null;
+        let m_Fusions = null;
+        if(m_InventoryUnSecure.Data.hasOwnProperty("LootInventory_UnSecure:V7.0"))
+        {
+            m_Fusion_UnSecure = JSON.parse(m_InventoryUnSecure.Data['LootInventory_UnSecure:V7.0'].Value);
+            var temp = JSON.parse(JSON.stringify(m_Fusion_UnSecure.Fusion_UnSecure));
+            m_Fusions = temp.Fusions;
+        }
+
+        function InitialSoldInfo()
+        {
+            return {
+                KeysToConsume:[],
+                SoldItems:[]
+            }
+        }
+
+        function contains(array, obj) 
+        {
+            for(var value of array)
+            {
+                if (value == obj) 
+                    return true;
+            }
+            return false;
+        }
+
+        function hasUberSource(array, obj)
+        {
+            for(var value of array)
+            {
+                var m_content = JSON.parse(JSON.stringify(value));
+                var m_OutputFusionId = m_content.OutputFusionId;
+                var m_UberInventorySource = m_content.UberInventorySource;
+                if (m_OutputFusionId == obj) 
+                {
+                    if(m_UberInventorySource != 0)
+                    {
+                        return m_UberInventorySource;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        if(soldOutInfo.Data.hasOwnProperty("SoldOutInfo:V7.0"))
+        {
+            finalInfo = JSON.parse(soldOutInfo.Data['SoldOutInfo:V7.0'].Value);
+        }
+        else
+        {
+            finalInfo = InitialSoldInfo();
+        }
+
+        request = {
+            PlayFabId : currentPlayerId,
+            VirtualCurrency : "BC",
+            Amount : totalPrice
+        };
+
+        for(var id of idList)
+        {
+            if(contains(finalInfo.SoldItems, id))
+            {
+                return {status:"error",detail:"id illeague"};
+            }
+            else
+            {
+                let m_UberSource = 0;
+                if(m_Fusions)
+                    m_UberSource = hasUberSource(m_Fusions, id);
+
+                if(m_UberSource != 0)
+                    finalInfo.KeysToConsume.push(m_UberSource);
+                else
+                    finalInfo.SoldItems.push(id);
+            }
+        }
+
+        if(request.Amount != 0)
+            server.AddUserVirtualCurrency(request)
+
+        request = {
+            PlayFabId: currentPlayerId,
+            Data: {
+                "SoldOutInfo:V7.0":JSON.stringify(finalInfo)
+            }
+        };
+        
+        let updateResult = server.UpdateUserReadOnlyData(request);
+
+        return {status:"ok",code:200}
+    }catch (ex) {
+        log.error("ERROR");
+        return {status:"error",detail:ex};
+    }
+}
+
 
 handlers.GetDailyBonus = function (args, context) {
     var level=0;
