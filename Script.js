@@ -286,41 +286,66 @@ handlers.ExportMasterPlayerData = function (args, context) {
     return response;
 };
 
-// This is a simple example of a function that is called from a
 // PlayStream event action. (https://playfab.com/introducing-playstream/)
-handlers.handlePlayStreamEventAndProfile = function (args, context) {
-
+handlers.MigrateProfile = function (args, context) {
     // The event that triggered the action
     // (https://api.playfab.com/playstream/docs/PlayStreamEventModels)
     var psEvent = context.playStreamEvent;
-
     // The profile data of the player associated with the event
     // (https://api.playfab.com/playstream/docs/PlayStreamProfileModels)
     var profile = context.playerProfile;
+
+    if()
+    var headers = {
+        "X-SecretKey": "OX5JGKG5KI6FQZXFROJAE6T3OKPIOKA43D3KI35D13KGBSSBKE"
+    };
+    var body = {
+        PlayFabId: currentPlayerId,
+        Keys:[
+            "LootInventory_UnSecure:V7.0",
+        ]
+    };
+    var url = "https://"+TitleID+".playfabapi.com/Admin/ExportMasterPlayerData";
+    var content = JSON.stringify(body);
+    var httpMethod = "post";
+    var contentType = "application/json";
+
+    // The pre-defined http object makes synchronous HTTP requests
+    var response = http.request(url, httpMethod, content, contentType, headers);
+    try{
+        response=JSON.parse(response)
+    }catch (ex) {
+        response= {status:"error",detail:"internal error"}
+    }
+
+    let request = {
+        PlayFabId: currentPlayerId,
+        Keys:[
+            "LootInventory_UnSecure:V7.0",
+        ]
+    };
+    let dataResult=server.GetUserData(request);
+
+    request = {
+        PlayFabId: currentPlayerId,
+        Keys:[
+            "LootInventory_Secure:V7.0",
+        ]
+    };
+    let SecureDataResult=server.GetUserReadOnlyData(request);
+
+    request = {
+        PlayFabId: currentPlayerId,
+        Keys:[
+            "LootInventory_Secure:V7.0",
+        ]
+    };
+    let SecureDataResult=server.GetUserReadOnlyData(request);
+
 
     // Post data about the event to an external API
     var content = JSON.stringify({ user: profile.PlayerId, event: psEvent.EventName });
     var response = http.request('https://httpbin.org/status/200', 'post', content, 'application/json', null);
 
     return { externalAPIResponse: response };
-};
-
-
-// This is an example of using PlayStream real-time segmentation to trigger
-// game logic based on player behavior. (https://playfab.com/introducing-playstream/)
-// The function is called when a player_statistic_changed PlayStream event causes a player
-// to enter a segment defined for high skill players. It sets a key value in
-// the player's internal data which unlocks some new content for the player.
-handlers.unlockHighSkillContent = function (args, context) {
-    var playerStatUpdatedEvent = context.playStreamEvent;
-    var request = {
-        PlayFabId: currentPlayerId,
-        Data: {
-            "HighSkillContent": "true",
-            "XPAtHighSkillUnlock": playerStatUpdatedEvent.StatisticValue.toString()
-        }
-    };
-    var playerInternalData = server.UpdateUserInternalData(request);
-    log.info('Unlocked HighSkillContent for ' + context.playerProfile.DisplayName);
-    return { profile: context.playerProfile };
 };
