@@ -25,7 +25,7 @@ handlers.Info = function (args, context) {
         }
     }
     let matchmakerInfo={
-        "118.190.45.37:8001":[]
+        "118.190.45.37:8001":["221.12.169.142"]
     }
     return{
         "ServiceInfo" :serviceInfo,
@@ -381,7 +381,7 @@ handlers.GetGameServerRegions = function (args, context) {
 handlers.GetRegionPlaylists = function (args, context) {
     return {"Playlists": []};
 };
-// This is a simple example of making a web request to an external HTTP API.
+
 handlers.ExportMasterPlayerData = function (args, context) {
     let TitleID=null;
     if (args && args.TitleID&&typeof(args.TitleID)=="string"&&args.TitleID.length==4){
