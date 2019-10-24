@@ -460,14 +460,6 @@ handlers.MigrateProfile = function (args, context) {
     };
     let SecureDataResult=server.GetUserReadOnlyData(request);
 
-    request = {
-        PlayFabId: currentPlayerId,
-        Keys:[
-            "LootInventory_Secure:V7.0",
-        ]
-    };
-    let SecureDataResult=server.GetUserReadOnlyData(request);
-
 
     // Post data about the event to an external API
     var content = JSON.stringify({ user: profile.PlayerId, event: psEvent.EventName });
